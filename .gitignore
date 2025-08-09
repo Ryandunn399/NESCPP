@@ -1,0 +1,56 @@
+# CMake build folders and files
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+install_manifest.txt
+Testing/
+CTestTestfile.cmake
+*.cmake.user
+*.cmake
+
+# Visual Studio files
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.suo
+*.vcxproj.*
+*.ncb
+*.opensdf
+*.sdf
+*.ipch
+*.aps
+*.pdb
+*.idb
+*.ilk
+*.log
+*.obj
+*.exe
+*.dll
+*.lib
+*.appx
+*.cache
+
+# Visual Studio Code
+.vscode/
+
+# Other common build artifacts
+*.log
+*.obj
+*.o
+*.so
+*.dylib
+*.exe
+*.dll
+*.out
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.user
+*.DS_Store
