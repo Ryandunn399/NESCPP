@@ -45,7 +45,7 @@ public:
      * 
      * @return int 
      */
-    int GetZero() const { return flags.zero; }
+    int GetZero() const { return flags.zero;}
 
     /**
      * @brief Set the Zero bit

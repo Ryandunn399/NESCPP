@@ -1,10 +1,299 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 
+#include "status_register.hpp"
+#include "memory.hpp"
+
+#ifndef MEM_SIZE
+#define MEM_SIZE 65536
+#endif
+
+#define OPCODE_TABLE_BUFFER 256
+
+#define ZERO_PAGE_START 0x0000;
+
+#define STACK_START 0x0100;
+#define STACK_END 0x01FF;
+
+#define RAM_START 0x0200;
+#define ROM_START 0x8000;
+
+/**
+ * @brief Class that handles the execution of instructions.
+ * 
+ */
 class Cpu6502 
 {
+public:
+
+    using OpcodeHandler = void(Cpu6502::*)();
+
+    /**
+     * @brief Construct a new Cpu6502 object
+     * 
+     */
+    Cpu6502(Memory& mem);
+
+    /**
+     * @brief Program Counter.
+     * 
+     */
+    uint16_t PC = Memory::kRomStart;
+
+    /**
+     * @brief Accumulator.
+     * 
+     */
+    uint8_t A = 0;
+
+    /**
+     * @brief X register.
+     * 
+     */
+    uint8_t X = 0;
+
+    /**
+     * @brief Y register.
+     * 
+     */
+    uint8_t Y = 0;
+
+    /**
+     * @brief Stack pointer.  It will be added to the start address for the stack
+     * and grow downwards as more things get pushed onto the stack.
+     * 
+     */
+    uint8_t SP = 0xFF;
+
+    /**
+     * @brief Class that handles functionality of the status register.
+     * 
+     */
+    StatusRegister StatusRegister;
+
+    /**
+     * @brief Executes the next instruction in memory.
+     * 
+     */
+    void ExecuteInstruction();
+
+    /**
+     * @brief Resets the CPU information.
+     * 
+     */
+    void Reset();
+
+    /**
+     * @brief Retrieves the raw memory for debugging/testing.
+     * 
+     * @return uint8_t* 
+     */
+    uint8_t* GetRawMemory() { return memory.GetRawMemory(); }
+
 private:
-   void foo();
-   void bar();
+
+    /**
+     * @brief Array that maps Opcode values to the corresponding CPU 6502 method call.
+     * 
+     */
+    std::array<OpcodeHandler, OPCODE_TABLE_BUFFER> opcodeTable;
+
+    /**
+     * @brief Memory manager class.
+     * 
+     */
+    Memory& memory;
+
+    /**
+     * @brief Keeps track of the stack pointer.
+     * 
+     */
+    uint8_t stackPointer;
+
+    /**
+     * @brief Will initialize the opcode table by pointing to the 
+     * 
+     */
+    void initOpcodeTable();
+
+    /**
+     * @brief Immediate addressing mode.
+     *
+     * In Immediate mode, the operand is specified directly in the byte
+     * following the opcode. This function returns the current program counter (PC),
+     * then advances PC by 1 so that the CPU can read the next instruction afterward.
+     *
+     * Example: LDA #$05  ; Loads the value 0x05 directly into A.
+     *
+     * @return uint16_t Address in memory where the immediate value is stored.
+     */
+    uint16_t AddressingImmediate();
+
+    /**
+     * @brief Zero Page addressing mode.
+     *
+     * Fetches an 8-bit address from the next byte after the opcode.
+     * This address refers to memory in the range 0x0000–0x00FF (the zero page).
+     * This mode is faster because it only uses one byte for the address.
+     *
+     * Example: LDA $42  ; Loads the value from address 0x0042.
+     *
+     * @return uint16_t Effective 16-bit address in zero page memory.
+     */
+    uint16_t AddressingZeroPage();
+
+    /**
+     * @brief Zero Page,X addressing mode.
+     *
+     * Fetches an 8-bit zero page address from the next byte after the opcode,
+     * then adds the X register to it (wrapping within 0x00–0xFF).
+     *
+     * Example: LDA $42,X ; Loads from address (0x0042 + X) & 0xFF.
+     *
+     * @return uint16_t Effective 16-bit address in zero page memory.
+     */
+    uint16_t AddressingZeroPageX();
+
+    /**
+     * @brief Zero Page,Y addressing mode.
+     *
+     * Fetches an 8-bit zero page address from the next byte after the opcode,
+     * then adds the Y register to it (wrapping within 0x00–0xFF).
+     *
+     * Example: LDX $42,Y ; Loads from address (0x0042 + Y) & 0xFF.
+     *
+     * @return uint16_t Effective 16-bit address in zero page memory.
+     */
+    uint16_t AddressingZeroPageY();
+
+    /**
+     * @brief Absolute addressing mode.
+     *
+     * Fetches a full 16-bit address from the next two bytes after the opcode
+     * (low byte first, then high byte). This address points directly to the operand.
+     *
+     * Example: LDA $1234 ; Loads from address 0x1234.
+     *
+     * @return uint16_t Effective 16-bit address in memory.
+     */
+    uint16_t AddressingAbsolute();
+
+    /**
+     * @brief Absolute,X addressing mode.
+     *
+     * Fetches a full 16-bit base address from the next two bytes after the opcode,
+     * then adds the X register to it. May cross a page boundary, which costs
+     * an extra CPU cycle for certain instructions.
+     *
+     * Example: LDA $1234,X ; Loads from 0x1234 + X.
+     *
+     * @return uint16_t Effective 16-bit address in memory.
+     */
+    uint16_t AddressingAbsoluteX();
+
+    /**
+     * @brief Absolute,Y addressing mode.
+     *
+     * Fetches a full 16-bit base address from the next two bytes after the opcode,
+     * then adds the Y register to it. May cross a page boundary, which costs
+     * an extra CPU cycle for certain instructions.
+     *
+     * Example: LDA $1234,Y ; Loads from 0x1234 + Y.
+     *
+     * @return uint16_t Effective 16-bit address in memory.
+     */
+    uint16_t AddressingAbsoluteY();
+
+    /**
+     * @brief Indexed Indirect (Indirect,X) addressing mode.
+     *
+     * Fetches an 8-bit zero page address from the next byte after the opcode,
+     * adds the X register to it (wrapping within zero page), and uses the
+     * resulting address to fetch a 16-bit pointer (low byte first, high byte next).
+     * That pointer is the effective address.
+     *
+     * Example: LDA ($20,X) ; Takes address at (0x0020 + X) & 0xFF, then dereferences it.
+     *
+     * @return uint16_t Effective 16-bit address in memory.
+     */
+    uint16_t AddressingIndirectX();
+
+    /**
+     * @brief Indirect Indexed (Indirect),Y addressing mode.
+     *
+     * Fetches an 8-bit zero page address from the next byte after the opcode,
+     * reads a 16-bit pointer from that zero page address (low byte first, high byte next),
+     * then adds the Y register to it. May cross a page boundary, costing an extra cycle.
+     *
+     * Example: LDA ($20),Y ; Dereferences address at 0x0020, then adds Y.
+     *
+     * @return uint16_t Effective 16-bit address in memory.
+     */
+    uint16_t AddressingIndirectY();
+
+    /**
+     * @brief Loads a memory value into the accumulator using immediate addressing. 
+     * 
+     */
+    void LDAImmediate();
+
+    /**
+     * @brief Loads a memory value into the accumulator using zero page addressing. 
+     * 
+     */
+    void LDAZeroPage();
+
+    /**
+     * @brief Loads a memory value into the accumulator using zero page x addressing. 
+     * 
+     */
+    void LDAZeroPageX();
+
+    /**
+     * @brief Loads a memory value into the accumulator using absolute addressing. 
+     * 
+     */
+    void LDAAbsolute();
+
+    /**
+     * @brief Loads a memory value into the accumulator using absolute x addressing. 
+     * 
+     */
+    void LDAAbsoluteX();
+
+    /**
+     * @brief Loads a memory value into the accumulator using absolute y addressing. 
+     * 
+     */
+    void LDAAbsoluteY();
+
+    /**
+     * @brief Loads a memory value into the accumulator using indirect x addressing. 
+     * 
+     */
+    void LDAIndirectX();
+
+    /**
+     * @brief Loads a memory value into the accumulator using indirect y addressing. 
+     * 
+     */
+    void LDAIndirectY();
+
+    /**
+     * @brief Helper method that will evaluate a value and set the zero
+     * and negative bit flags in our status register.
+     * 
+     * @param value 
+     */
+    void SetNZFlags(uint8_t value);
+
+    /**
+     * @brief Updates correct cycle count in the event of a page cross.
+     * Page cross takes place in the event that high byte changed when updating register values.
+     * Ex - $12FF + 0x01 = $1300, the high byte changes from 12 to 13.
+     * 
+     */
+    void HandlePageCross(uint16_t baseAddress, uint16_t effectiveAddress);
 };
