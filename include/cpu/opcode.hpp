@@ -75,6 +75,63 @@ enum class Opcode: uint8_t
     LDA_INDIRECTY = 0xB1,
 
     /**
+     * @brief Store Accumulator to Zero Page Address
+     * 
+     * The zero page address following the opcode specifies where the accumulator value is stored.
+     * Only the lower 8 bits of the address are used.
+     */
+    STA_ZEROPAGE = 0x85,
+
+    /**
+     * @brief Store Accumulator to Zero Page Address Indexed by X
+     * 
+     * The zero page base address following the opcode is added to the X register (with wraparound on zero page),
+     * and the accumulator is stored at this effective zero page address.
+     */
+    STA_ZEROPAGEX = 0x95,
+
+    /**
+     * @brief Store Accumulator to Absolute Address
+     * 
+     * The two bytes following the opcode specify the 16-bit absolute address where the accumulator is stored.
+     */
+    STA_ABSOLUTE = 0x8D,
+
+    /**
+     * @brief Store Accumulator to Absolute Address Indexed by X
+     * 
+     * The absolute base address from the following two bytes is added to the X register to get the effective address.
+     * The accumulator is stored at this effective address.
+     */
+    STA_ABSOLUTEX = 0x9D,
+
+    /**
+     * @brief Store Accumulator to Absolute Address Indexed by Y
+     * 
+     * The absolute base address from the following two bytes is added to the Y register to get the effective address.
+     * The accumulator is stored at this effective address.
+     */
+    STA_ABSOLUTEY = 0x99,
+
+    /**
+     * @brief Store Accumulator Indirect Indexed by X (Indexed Indirect)
+     * 
+     * The zero page base address following the opcode is added to the X register (with zero page wraparound) to get a zero page address.
+     * The 16-bit effective address is read from this zero page address and the next byte.
+     * The accumulator is stored at this effective address.
+     */
+    STA_INDIRECTX = 0x81,
+
+    /**
+     * @brief Store Accumulator Indirect Indexed by Y (Indirect Indexed)
+     * 
+     * The zero page base address following the opcode is used to read a 16-bit address from zero page,
+     * then Y is added to that address to get the effective address.
+     * The accumulator is stored at this effective address.
+     */
+    STA_INDIRECTY = 0x91,
+
+    /**
      * @brief Transfer Accumulator to X Register (Implied)
      * 
      * Copies the value currently in the accumulator into the X register.

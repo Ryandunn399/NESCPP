@@ -288,6 +288,19 @@ private:
     void LDAIndirectY();
 
     /**
+     * @brief Stores the accumulator value into memory.
+     * 
+     * @param address 
+     */
+    void STA(uint16_t address);
+
+    /**
+     * @brief Stores accumulator value into memory using zero page addressing mode.
+     * 
+     */
+    void STAZeroPage();
+
+    /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.
      * 

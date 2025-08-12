@@ -262,6 +262,8 @@ TEST_F(Cpu6502Test, LDA_Immediate_ClearsFlags)
     EXPECT_FALSE(cpu.StatusRegister.GetNegative());
 }
 
+
+
 // STA Zero Page Tests
 TEST_F(Cpu6502Test, STA_ZeroPage_BasicOperation)
 {

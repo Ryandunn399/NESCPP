@@ -17,6 +17,7 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::LDA_ABSOLUTEY)]    = &Cpu6502::LDAAbsoluteY;
     opcodeTable[static_cast<uint8_t>(Opcode::LDA_INDIRECTX)]    = &Cpu6502::LDAIndirectX;
     opcodeTable[static_cast<uint8_t>(Opcode::LDA_INDIRECTY)]    = &Cpu6502::LDAIndirectY;
+    opcodeTable[static_cast<uint8_t>(Opcode::STA_ZEROPAGE)]     = &Cpu6502::STAZeroPage;
 }
 
 void Cpu6502::Reset()
@@ -157,6 +158,17 @@ void Cpu6502::LDAIndirectX()
 void Cpu6502::LDAIndirectY()
 {
     LDA(AddressingIndirectY());
+}
+
+void Cpu6502::STA(uint16_t address)
+{
+    memory.WriteByte(address, A);
+    SetNZFlags(A);
+}
+
+void Cpu6502::STAZeroPage()
+{
+    STA(AddressingZeroPage());
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)
