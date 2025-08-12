@@ -113,46 +113,50 @@ uint16_t Cpu6502::AddressingIndirectY()
     return effectiveAddress;
 }
 
-void Cpu6502::LDAImmediate()
+void Cpu6502::LDA(uint16_t address)
 {
-    uint16_t address = AddressingImmediate();
     A = memory.ReadByte(address);
     SetNZFlags(A);
 }
 
+void Cpu6502::LDAImmediate()
+{
+    LDA(AddressingImmediate());
+}
+
 void Cpu6502::LDAZeroPage()
 {
-
+    LDA(AddressingZeroPage());
 }
 
 void Cpu6502::LDAZeroPageX()
 {
-    
+    LDA(AddressingZeroPageX());
 }
 
 void Cpu6502::LDAAbsolute()
 {
-    
+    LDA(AddressingAbsolute());
 }
 
 void Cpu6502::LDAAbsoluteX()
 {
-    
+    LDA(AddressingAbsoluteX());
 }
 
 void Cpu6502::LDAAbsoluteY()
 {
-    
+    LDA(AddressingAbsoluteY());
 }
 
 void Cpu6502::LDAIndirectX()
 {
-    
+    LDA(AddressingIndirectX());
 }
 
 void Cpu6502::LDAIndirectY()
 {
-    
+    LDA(AddressingIndirectY());
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)

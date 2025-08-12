@@ -73,4 +73,62 @@ enum class Opcode: uint8_t
      * Page crossing may add extra cycles.
      */
     LDA_INDIRECTY = 0xB1,
+
+    /**
+     * @brief Transfer Accumulator to X Register (Implied)
+     * 
+     * Copies the value currently in the accumulator into the X register.
+     * No memory is accessed. Processor flags affected:
+     * - Negative (N): Set if the result in X is negative.
+     * - Zero (Z): Set if the result in X is zero.
+     */
+    TAX_IMPLIED = 0xAA,
+
+    /**
+     * @brief Transfer Accumulator to Y Register (Implied)
+     * 
+     * Copies the value currently in the accumulator into the Y register.
+     * No memory is accessed. Processor flags affected:
+     * - Negative (N): Set if the result in Y is negative.
+     * - Zero (Z): Set if the result in Y is zero.
+     */
+    TAY_IMPLIED = 0xA8,
+
+    /**
+     * @brief Transfer Stack Pointer to X Register (Implied)
+     * 
+     * Copies the current value of the stack pointer into the X register.
+     * No memory is accessed. Processor flags affected:
+     * - Negative (N): Set if the result in X is negative.
+     * - Zero (Z): Set if the result in X is zero.
+     */
+    TSX_IMPLIED = 0xBA,
+
+    /**
+     * @brief Transfer X Register to Accumulator (Implied)
+     * 
+     * Copies the value currently in the X register into the accumulator.
+     * No memory is accessed. Processor flags affected:
+     * - Negative (N): Set if the result in A is negative.
+     * - Zero (Z): Set if the result in A is zero.
+     */
+    TXA_IMPLIED = 0x8A,
+
+    /**
+     * @brief Transfer X Register to Stack Pointer (Implied)
+     * 
+     * Copies the value currently in the X register into the stack pointer.
+     * No processor flags are affected.
+     */
+    TXS_IMPLIED = 0x9A,
+
+    /**
+     * @brief Transfer Y Register to Accumulator (Implied)
+     * 
+     * Copies the value currently in the Y register into the accumulator.
+     * No memory is accessed. Processor flags affected:
+     * - Negative (N): Set if the result in A is negative.
+     * - Zero (Z): Set if the result in A is zero.
+     */
+    TYA_IMPLIED = 0x98
 };

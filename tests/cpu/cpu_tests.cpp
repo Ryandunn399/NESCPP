@@ -1,33 +1,7 @@
 #include <gtest/gtest.h>
 #include "cpu/cpu6502.hpp"
 #include "nes.hpp"
-
-class Cpu6502Test : public ::testing::Test
-{
-protected:
-    NES nes;
-    Cpu6502& cpu;
-    Memory& memory;
-    
-    Cpu6502Test() : nes(), cpu(nes.CPU), memory(nes.Memory)
-    {
-    }
-
-    void SetUp() override
-    {
-        // CPU is initialized with fresh state
-        // PC starts at ROM area, all registers are 0
-    }
-    
-    // Helper to set up memory with test data
-    void SetupMemory(uint16_t address, const std::vector<uint8_t>& data)
-    {
-        for (uint16_t i = 0; i < data.size(); ++i)
-        {
-            memory.ForceWriteByte(address + i, data[i]);
-        }
-    }
-};
+#include "tests/cpu_fixture.hpp"
 
 // Basic CPU State Tests
 TEST_F(Cpu6502Test, InitialState)
@@ -55,72 +29,6 @@ TEST_F(Cpu6502Test, Reset)
     EXPECT_EQ(0, cpu.Y);
     EXPECT_EQ(Memory::kRomStart, cpu.PC);
     EXPECT_EQ(0xFF, cpu.SP);
-}
-
-// LDA Immediate Tests
-TEST_F(Cpu6502Test, LDA_Immediate_BasicOperation)
-{
-    // Set up program: LDA #$42
-    SetupMemory(Memory::kRomStart, {0xA9, 0x42});
-
-    cpu.PC = Memory::kRomStart;
-    
-    // Execute LDA #$42
-    cpu.ExecuteInstruction();
-    
-    // Check results
-    EXPECT_EQ(0x42, cpu.A);
-    EXPECT_EQ(Memory::kRomStart + 2, cpu.PC);  // PC should advance by 2
-}
-
-TEST_F(Cpu6502Test, LDA_Immediate_ZeroFlag)
-{
-    // Set up program: LDA #$00
-    SetupMemory(Memory::kRomStart, {0xA9, 0x00});
-    cpu.PC = Memory::kRomStart;
-    
-    // Execute LDA #$00
-    cpu.ExecuteInstruction();
-    
-    // Check results
-    EXPECT_EQ(0x00, cpu.A);
-    EXPECT_TRUE(true);
-    EXPECT_TRUE(cpu.StatusRegister.GetZero());   // Zero flag should be set
-    EXPECT_FALSE(cpu.StatusRegister.GetNegative()); // Negative flag should be clear
-}
-
-TEST_F(Cpu6502Test, LDA_Immediate_NegativeFlag)
-{
-    // Set up program: LDA #$80 (negative number in signed interpretation)
-    SetupMemory(Memory::kRomStart, {0xA9, 0x80});
-    cpu.PC = Memory::kRomStart;
-    
-    // Execute LDA #$80
-    cpu.ExecuteInstruction();
-    
-    // Check results
-    EXPECT_EQ(0x80, cpu.A);
-    EXPECT_FALSE(cpu.StatusRegister.GetZero());   // Zero flag should be clear
-    EXPECT_TRUE(cpu.StatusRegister.GetNegative()); // Negative flag should be set
-}
-
-TEST_F(Cpu6502Test, LDA_Immediate_ClearsFlags)
-{
-    // Set flags to known state
-    cpu.StatusRegister.SetZero(true);
-    cpu.StatusRegister.SetNegative(true);
-    
-    // Set up program: LDA #$42 (should clear both flags)
-    SetupMemory(Memory::kRomStart, {0xA9, 0x42});
-    cpu.PC = Memory::kRomStart;
-    
-    // Execute LDA #$42
-    cpu.ExecuteInstruction();
-    
-    // Check that flags were properly updated
-    EXPECT_EQ(0x42, cpu.A);
-    EXPECT_FALSE(cpu.StatusRegister.GetZero());
-    EXPECT_FALSE(cpu.StatusRegister.GetNegative());
 }
 
 // Addressing Mode Tests (using public memory access methods for verification)
@@ -240,5 +148,5 @@ TEST_F(Cpu6502Test, MemoryIntegration)
     EXPECT_EQ(0x1234, memory.ReadWord(0x0300));
     
     // Test that ROM protection works through CPU
-    EXPECT_THROW(memory.ForceWriteByte(Memory::kRomStart, 0x42), std::runtime_error);
+    EXPECT_THROW(memory.WriteWord(Memory::kRomStart, 0x42), std::runtime_error);
 }

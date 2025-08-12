@@ -98,7 +98,7 @@ private:
      * @brief Array that maps Opcode values to the corresponding CPU 6502 method call.
      * 
      */
-    std::array<OpcodeHandler, OPCODE_TABLE_BUFFER> opcodeTable;
+    std::array<OpcodeHandler, OPCODE_TABLE_BUFFER> opcodeTable {};
 
     /**
      * @brief Memory manager class.
@@ -232,6 +232,12 @@ private:
      * @return uint16_t Effective 16-bit address in memory.
      */
     uint16_t AddressingIndirectY();
+
+    /**
+     * @brief Loads memory address value into the accumulator register.
+     * 
+     */
+    void LDA(uint16_t address);
 
     /**
      * @brief Loads a memory value into the accumulator using immediate addressing. 
