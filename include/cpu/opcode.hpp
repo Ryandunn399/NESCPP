@@ -73,6 +73,107 @@ enum class Opcode: uint8_t
      * Page crossing may add extra cycles.
      */
     LDA_INDIRECTY = 0xB1,
+     
+    /**
+     * @brief Load X Register with Immediate Value
+     * 
+     * The value following the opcode is loaded directly into the X register.
+     */
+    LDX_IMMEDIATE = 0xA2,
+
+    /**
+     * @brief Load X Register from Zero Page
+     * 
+     * The byte at the zero page address following the opcode is loaded into the X register.
+     */
+    LDX_ZEROPAGE = 0xA6,
+
+    /**
+     * @brief Load X Register from Zero Page Indexed by Y
+     * 
+     * The zero page address following the opcode is offset by the Y register to get the effective address.
+     * The byte at this effective address is loaded into the X register.
+     */
+    LDX_ZEROPAGEY = 0xB6,
+
+    /**
+     * @brief Load X Register from Absolute Address
+     * 
+     * The two bytes following the opcode form a 16-bit absolute address.
+     * The byte at this address is loaded into the X register.
+     */
+    LDX_ABSOLUTE = 0xAE,
+
+    /**
+     * @brief Load X Register from Absolute Address Indexed by Y
+     * 
+     * The two bytes following the opcode form a 16-bit base address, then Y is added to get the effective address.
+     * The byte at this effective address is loaded into the X register.
+     * Page crossing may add extra cycles.
+     */
+    LDX_ABSOLUTEY = 0xBE,
+
+    /**
+     * @brief Load Y Register with Immediate Value
+     * 
+     * The value following the opcode is loaded directly into the Y register.
+     */
+    LDY_IMMEDIATE = 0xA0,
+
+    /**
+     * @brief Load Y Register from Zero Page
+     * 
+     * The byte at the zero page address following the opcode is loaded into the Y register.
+     */
+    LDY_ZEROPAGE = 0xA4,
+
+    /**
+     * @brief Load Y Register from Zero Page Indexed by X
+     * 
+     * The zero page address following the opcode is offset by the X register to get the effective address.
+     * The byte at this effective address is loaded into the Y register.
+     */
+    LDY_ZEROPAGEX = 0xB4,
+
+    /**
+     * @brief Load Y Register from Absolute Address
+     * 
+     * The two bytes following the opcode form a 16-bit absolute address.
+     * The byte at this address is loaded into the Y register.
+     */
+    LDY_ABSOLUTE = 0xAC,
+
+    /**
+     * @brief Load Y Register from Absolute Address Indexed by X
+     * 
+     * The two bytes following the opcode form a 16-bit base address, then X is added to get the effective address.
+     * The byte at this effective address is loaded into the Y register.
+     * Page crossing may add extra cycles.
+     */
+    LDY_ABSOLUTEX = 0xBC,
+
+    /**
+     * @brief Store Y Register into Zero Page
+     * 
+     * The Y register value is stored at the zero page address following the opcode.
+     */
+    STY_ZEROPAGE = 0x84,
+
+    /**
+     * @brief Store Y Register into Zero Page Indexed by X
+     * 
+     * The zero page address following the opcode is offset by the X register to get the effective address.
+     * The Y register value is stored at this address.
+     */
+    STY_ZEROPAGEX = 0x94,
+
+    /**
+     * @brief Store Y Register into Absolute Address
+     * 
+     * The two bytes following the opcode form a 16-bit absolute address.
+     * The Y register value is stored at this address.
+     */
+    STY_ABSOLUTE = 0x8C,
 
     /**
      * @brief Store Accumulator to Zero Page Address

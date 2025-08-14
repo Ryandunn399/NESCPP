@@ -301,6 +301,160 @@ private:
     void STAZeroPage();
 
     /**
+     * @brief Stores accumulator value into the memory using zero page x addressing mode.
+     * 
+     */
+    void STAZeroPageX();
+
+    /**
+     * @brief Stores accumulator value into the memory using absolute addressing mode.
+     * 
+     */
+    void STAAbsolute();
+
+    /**
+     * @brief Stores accumulator value into the memory using absolute x addressing mode.
+     * 
+     */
+    void STAAbsoluteX();
+
+    /**
+     * @brief Stores accumulator value into the memory using absolute y addressing mode.
+     * 
+     */
+    void STAAbsoluteY();
+
+    /**
+     * @brief Stores accumulator value into the memory using indirect x addressing mode.
+     * 
+     */
+    void STAIndirectX();
+
+    /**
+     * @brief Stores accumulator value into the memory using indirect y addressing mode.
+     * 
+     */
+    void STAIndirectY();
+
+    /**
+     * @brief Stores the X register value into memory.
+     * 
+     * @param address memory address to store the value into.
+     */
+    void STX(uint16_t address);
+
+    /**
+     * @brief Stores the x register value into memory using zero page addressing mode.
+     * 
+     */
+    void STXZeroPage();
+
+    /**
+     * @brief Stores the x register value into memory using zero page y addressing mode.
+     * 
+     */
+    void STXZeroPageY();
+
+    /**
+     * @brief Stores the x register value into memory using absolute addressing mode.
+     * 
+     */
+    void STXAbsolute();
+
+    /**
+     * @brief Stores the Y register value into memory.
+     * 
+     * @param address  memory address to store the value into.
+     */
+    void STY(uint16_t address);
+
+    /**
+     * @brief Stores the y register value into memory using zero page addressing mode.
+     * 
+     */
+    void STYZeroPage();
+
+    /**
+     * @brief Stores the y register value into memory using zero page x addressing mode.
+     * 
+     */
+    void STYZeroPageX();
+
+    /**
+     * @brief Stores the y register value into memory using absolute addressing mode.
+     * 
+     */
+    void STYAbsolute();
+
+    /**
+     * @brief Loads a memory value into the X register.
+     * 
+     * @param address Address to load value from.
+     */
+    void LDX(uint16_t address);
+
+    /**
+     * @brief Loads a memory value into the X register using immediate addressing mode.
+     * 
+     */
+    void LDXImmediate();
+
+    /**
+     * @brief Lodas a memory value into the X register using immediate zero page addressing mode.
+     * 
+     */
+    void LDXZeroPage();
+
+    /**
+     * @brief Lodas a memory value into the X register using immediate zero page y addressing mode.
+     * 
+     */
+    void LDXZeroPageY();
+
+    /**
+     * @brief Lodas a memory value into the X register using immediate absolute addressing mode.
+     * 
+     */
+    void LDXAbsolute();
+
+    /**
+     * @brief Lodas a memory value into the X register using immediate absolute y addressing mode.
+     * 
+     */
+    void LDXAbsoluteY();
+
+    /**
+     * @brief Loads a memory value into the Y register
+     * 
+     * @param address sss
+     */
+    void LDY(uint16_t address);
+
+    /**
+     * @brief Loads a memory value into the Y register using immediate addressing mode.
+     * 
+     */
+    void LDYImmediate();
+
+    /**
+     * @brief Loads a memory value into the Y register using zero page x addressing mode.
+     * 
+     */
+    void LDYZeroPageX();
+
+    /**
+     * @brief Loads a memory value into the Y register using absolute addressing mode.
+     * 
+     */
+    void LDYAbsolute();
+
+    /**
+     * @brief Loads a memory value int othe Y register using absolute x addressing mode.
+     * 
+     */
+    void LDYAbsoluteX();
+
+    /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.
      * 

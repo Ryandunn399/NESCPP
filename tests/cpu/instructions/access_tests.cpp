@@ -262,8 +262,6 @@ TEST_F(Cpu6502Test, LDA_Immediate_ClearsFlags)
     EXPECT_FALSE(cpu.StatusRegister.GetNegative());
 }
 
-
-
 // STA Zero Page Tests
 TEST_F(Cpu6502Test, STA_ZeroPage_BasicOperation)
 {
@@ -280,4 +278,89 @@ TEST_F(Cpu6502Test, STA_ZeroPage_BasicOperation)
     EXPECT_EQ(0x42, memory.ReadByte(0x0080));  // Memory should contain A value
     EXPECT_EQ(0x42, cpu.A);                    // A register unchanged
     EXPECT_EQ(Memory::kRomStart + 2, cpu.PC);  // PC should advance by 2
+}
+
+TEST_F(Cpu6502Test, STA_Zero_Page_X)
+{
+    SetupMemory(Memory::kRomStart, {0x95, 0xA});
+    cpu.PC = Memory::kRomStart;
+    cpu.X = 0x33;
+    cpu.A = 0x69;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0x69, memory.ReadByte(0xA + 0x33));
+    EXPECT_EQ(0x69, cpu.A);
+    EXPECT_EQ(Memory::kRomStart + 2, cpu.PC);
+}
+
+TEST_F(Cpu6502Test, STA_Absolute)
+{
+    SetupMemory(Memory::kRomStart, {0x8D, 0x34, 0x12});
+    cpu.PC = Memory::kRomStart;
+    cpu.A = 0x69;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0x69, memory.ReadByte(0x1234));
+    EXPECT_EQ(0x69, cpu.A);
+    EXPECT_EQ(Memory::kRomStart + 3, cpu.PC);
+}
+
+TEST_F(Cpu6502Test, STA_Absolute_X)
+{
+    SetupMemory(Memory::kRomStart, {0x9D, 0x00, 0x06});
+    cpu.PC = Memory::kRomStart;
+    cpu.X = 0x2D;
+    cpu.A = 0xDD;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0xDD, memory.ReadByte(0x600 + 0x2D));
+    EXPECT_EQ(0xDD, cpu.A);
+    EXPECT_EQ(Memory::kRomStart + 3, cpu.PC);
+}
+
+TEST_F(Cpu6502Test, STA_Absolute_Y)
+{
+    SetupMemory(Memory::kRomStart, {0x99, 0x00, 0x06});
+    cpu.PC = Memory::kRomStart;
+    cpu.Y = 0x2D;
+    cpu.A = 0xDD;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0xDD, memory.ReadByte(0x600 + 0x2D));
+    EXPECT_EQ(0xDD, cpu.A);
+    EXPECT_EQ(Memory::kRomStart + 3, cpu.PC);
+}
+
+TEST_F(Cpu6502Test, STA_Indirect_X)
+{
+    SetupMemory(Memory::kRomStart, {0x81, 0xAA});
+    memory.WriteByte(0xB2, 0x1A);
+    memory.WriteByte(0xB3, 0x00);
+    cpu.X = 0x8;
+    cpu.A = 0x5;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0x5, memory.ReadByte(0x1A));
+    EXPECT_EQ(0x5, cpu.A);
+    EXPECT_EQ(Memory::kRomStart + 2, cpu.PC);
+}
+
+TEST_F(Cpu6502Test, STA_Indirect_Y)
+{
+    SetupMemory(Memory::kRomStart, {0x91, 0xAA});
+    memory.WriteByte(0xAA, 0x1A);
+    memory.WriteByte(0xAB, 0x00);
+    cpu.Y = 0x8;
+    cpu.A = 0x5;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0x5, memory.ReadByte(0x1A + 0x8));
+    EXPECT_EQ(0x5, cpu.A);
+    EXPECT_EQ(Memory::kRomStart + 2, cpu.PC);
 }

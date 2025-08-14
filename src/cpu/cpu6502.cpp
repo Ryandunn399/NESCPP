@@ -18,6 +18,12 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::LDA_INDIRECTX)]    = &Cpu6502::LDAIndirectX;
     opcodeTable[static_cast<uint8_t>(Opcode::LDA_INDIRECTY)]    = &Cpu6502::LDAIndirectY;
     opcodeTable[static_cast<uint8_t>(Opcode::STA_ZEROPAGE)]     = &Cpu6502::STAZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::STA_ZEROPAGEX)]    = &Cpu6502::STAZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::STA_ABSOLUTE)]     = &Cpu6502::STAAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::STA_ABSOLUTEX)]    = &Cpu6502::STAAbsoluteX;
+    opcodeTable[static_cast<uint8_t>(Opcode::STA_ABSOLUTEY)]    = &Cpu6502::STAAbsoluteY;
+    opcodeTable[static_cast<uint8_t>(Opcode::STA_INDIRECTX)]    = &Cpu6502::STAIndirectX;
+    opcodeTable[static_cast<uint8_t>(Opcode::STA_INDIRECTY)]    = &Cpu6502::STAIndirectY;
 }
 
 void Cpu6502::Reset()
@@ -169,6 +175,36 @@ void Cpu6502::STA(uint16_t address)
 void Cpu6502::STAZeroPage()
 {
     STA(AddressingZeroPage());
+}
+
+void Cpu6502::STAZeroPageX()
+{
+    STA(AddressingZeroPageX());
+}
+
+void Cpu6502::STAAbsolute()
+{
+    STA(AddressingAbsolute());
+}
+
+void Cpu6502::STAAbsoluteX()
+{
+    STA(AddressingAbsoluteX());
+}
+
+void Cpu6502::STAAbsoluteY()
+{
+    STA(AddressingAbsoluteY());
+}
+
+void Cpu6502::STAIndirectX()
+{
+    STA(AddressingIndirectX());
+}
+
+void Cpu6502::STAIndirectY()
+{
+    STA(AddressingIndirectY());
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)
