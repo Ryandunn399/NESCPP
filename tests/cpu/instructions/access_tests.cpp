@@ -552,8 +552,3 @@ TEST_F(Cpu6502Test, LDY_AbsoluteX)
     EXPECT_EQ(0xAA, cpu.Y);
     AssertPCLocation(cpu, 3);
 }
-
-void AssertPCLocation(Cpu6502& cpu, int cycles)
-{
-    EXPECT_EQ(Memory::kRomStart + cycles, cpu.PC);
-}

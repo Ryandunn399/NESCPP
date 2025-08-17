@@ -232,7 +232,7 @@ private:
      * @return uint16_t Effective 16-bit address in memory.
      */
     uint16_t AddressingIndirectY();
-
+    
     /**
      * @brief Loads memory address value into the accumulator register.
      * 
@@ -459,6 +459,30 @@ private:
      * 
      */
     void LDYAbsoluteX();
+
+    /**
+     * @brief Copies accumulator value to the X register.
+     * 
+     */
+    void TAX();
+
+    /**
+     * @brief Copies the X register value to the accumulator.
+     * 
+     */
+    void TXA();
+
+    /**
+     * @brief Copies accumulator value to the Y register.
+     * 
+     */
+    void TAY();
+
+    /**
+     * @brief Copies the Y register value to the accumulator.
+     * 
+     */
+    void TYA();
 
     /**
      * @brief Helper method that will evaluate a value and set the zero

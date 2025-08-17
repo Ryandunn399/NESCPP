@@ -34,6 +34,11 @@ protected:
             memory.ForceWriteByte(address + i, data[i]);
         }
     }
+
+    void AssertPCLocation(Cpu6502& cpu, int cycles)
+    {
+        EXPECT_EQ(Memory::kRomStart + cycles, cpu.PC);
+    }
 };
 
 #endif

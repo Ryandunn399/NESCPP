@@ -51,6 +51,12 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::STY_ZEROPAGE)]     = &Cpu6502::STYZeroPage;
     opcodeTable[static_cast<uint8_t>(Opcode::STY_ZEROPAGEX)]    = &Cpu6502::STYZeroPageX;
     opcodeTable[static_cast<uint8_t>(Opcode::STY_ABSOLUTE)]     = &Cpu6502::STYAbsolute;
+
+    // Transfer
+    opcodeTable[static_cast<uint8_t>(Opcode::TAX_IMPLIED)]      = &Cpu6502::TAX;
+    opcodeTable[static_cast<uint8_t>(Opcode::TXA_IMPLIED)]      = &Cpu6502::TXA;
+    opcodeTable[static_cast<uint8_t>(Opcode::TAY_IMPLIED)]      = &Cpu6502::TAY;
+    opcodeTable[static_cast<uint8_t>(Opcode::TYA_IMPLIED)]      = &Cpu6502::TYA;
 }
 
 void Cpu6502::Reset()
@@ -336,6 +342,30 @@ void Cpu6502::STYZeroPageX()
 void Cpu6502::STYAbsolute()
 {
     STY(AddressingAbsolute());
+}
+
+void Cpu6502::TAX()
+{
+    X = A;
+    SetNZFlags(X);
+}
+
+void Cpu6502::TXA()
+{
+    A = X;
+    SetNZFlags(A);
+}
+
+void Cpu6502::TAY()
+{
+    Y = A;
+    SetNZFlags(Y);
+}
+
+void Cpu6502::TYA()
+{
+    A = Y;
+    SetNZFlags(A);
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)
