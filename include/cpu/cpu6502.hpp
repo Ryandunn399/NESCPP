@@ -437,6 +437,12 @@ private:
     void LDYImmediate();
 
     /**
+     * @brief Loads a memory value into the Y register using zero page addressing mode.
+     * 
+     */
+    void LDYZeroPage();
+
+    /**
      * @brief Loads a memory value into the Y register using zero page x addressing mode.
      * 
      */

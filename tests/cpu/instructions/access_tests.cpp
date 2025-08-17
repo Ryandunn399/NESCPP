@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "tests/cpu_fixture.hpp"
 
+void AssertPCLocation(Cpu6502& cpu, int cycles);
+
 // LDA Immediate Tests
 TEST_F(Cpu6502Test, LDA_Immediate_BasicOperation)
 {
@@ -277,7 +279,7 @@ TEST_F(Cpu6502Test, STA_ZeroPage_BasicOperation)
     // Check results
     EXPECT_EQ(0x42, memory.ReadByte(0x0080));  // Memory should contain A value
     EXPECT_EQ(0x42, cpu.A);                    // A register unchanged
-    EXPECT_EQ(Memory::kRomStart + 2, cpu.PC);  // PC should advance by 2
+    AssertPCLocation(cpu, 2);
 }
 
 TEST_F(Cpu6502Test, STA_Zero_Page_X)
@@ -291,7 +293,7 @@ TEST_F(Cpu6502Test, STA_Zero_Page_X)
 
     EXPECT_EQ(0x69, memory.ReadByte(0xA + 0x33));
     EXPECT_EQ(0x69, cpu.A);
-    EXPECT_EQ(Memory::kRomStart + 2, cpu.PC);
+    AssertPCLocation(cpu, 2);
 }
 
 TEST_F(Cpu6502Test, STA_Absolute)
@@ -304,7 +306,7 @@ TEST_F(Cpu6502Test, STA_Absolute)
 
     EXPECT_EQ(0x69, memory.ReadByte(0x1234));
     EXPECT_EQ(0x69, cpu.A);
-    EXPECT_EQ(Memory::kRomStart + 3, cpu.PC);
+    AssertPCLocation(cpu, 3);
 }
 
 TEST_F(Cpu6502Test, STA_Absolute_X)
@@ -318,7 +320,7 @@ TEST_F(Cpu6502Test, STA_Absolute_X)
 
     EXPECT_EQ(0xDD, memory.ReadByte(0x600 + 0x2D));
     EXPECT_EQ(0xDD, cpu.A);
-    EXPECT_EQ(Memory::kRomStart + 3, cpu.PC);
+    AssertPCLocation(cpu, 3);
 }
 
 TEST_F(Cpu6502Test, STA_Absolute_Y)
@@ -332,7 +334,7 @@ TEST_F(Cpu6502Test, STA_Absolute_Y)
 
     EXPECT_EQ(0xDD, memory.ReadByte(0x600 + 0x2D));
     EXPECT_EQ(0xDD, cpu.A);
-    EXPECT_EQ(Memory::kRomStart + 3, cpu.PC);
+    AssertPCLocation(cpu, 3);
 }
 
 TEST_F(Cpu6502Test, STA_Indirect_X)
@@ -347,7 +349,7 @@ TEST_F(Cpu6502Test, STA_Indirect_X)
 
     EXPECT_EQ(0x5, memory.ReadByte(0x1A));
     EXPECT_EQ(0x5, cpu.A);
-    EXPECT_EQ(Memory::kRomStart + 2, cpu.PC);
+    AssertPCLocation(cpu, 2);
 }
 
 TEST_F(Cpu6502Test, STA_Indirect_Y)
@@ -362,5 +364,196 @@ TEST_F(Cpu6502Test, STA_Indirect_Y)
 
     EXPECT_EQ(0x5, memory.ReadByte(0x1A + 0x8));
     EXPECT_EQ(0x5, cpu.A);
-    EXPECT_EQ(Memory::kRomStart + 2, cpu.PC);
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, STX_ZeroPage)
+{
+    SetupMemory(Memory::kRomStart, {0x86, 0x73});
+    cpu.X = 0xAB;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0xAB, memory.ReadByte(0x73));
+    EXPECT_EQ(0xAB, cpu.X);
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, STX_ZeroPageY)
+{
+    SetupMemory(Memory::kRomStart, {0x96, 0x1});
+    cpu.Y = 0x2B;
+    cpu.X = 0xFA;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0xFA, memory.ReadByte(0x1 + 0x2B));
+    EXPECT_EQ(0xFA, cpu.X);
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, STX_Absolute)
+{
+    SetupMemory(Memory::kRomStart, {0x8E, 0xB3, 0x77});
+    cpu.X = 0xFA;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0xFA, memory.ReadByte(0x77B3));
+    EXPECT_EQ(0xFA, cpu.X);
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, STY_ZeroPage)
+{
+    SetupMemory(Memory::kRomStart, {0x84, 0x73});
+    cpu.Y = 0xAB;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0xAB, memory.ReadByte(0x73));
+    EXPECT_EQ(0xAB, cpu.Y);
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, STY_ZeroPageX)
+{
+    SetupMemory(Memory::kRomStart, {0x94, 0x1});
+    cpu.X = 0x2B;
+    cpu.Y = 0xFA;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0xFA, memory.ReadByte(0x1 + 0x2B));
+    EXPECT_EQ(0xFA, cpu.Y);
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, STY_Absolute)
+{
+    SetupMemory(Memory::kRomStart, {0x8C, 0xB3, 0x77});
+    cpu.Y = 0xFA;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0xFA, memory.ReadByte(0x77B3));
+    EXPECT_EQ(0xFA, cpu.Y);
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, LDX_Immediate)
+{
+    SetupMemory(Memory::kRomStart, {0xA2, 0xD7});
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0xD7, cpu.X);
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, LDX_ZeroPage)
+{
+    SetupMemory(Memory::kRomStart, {0xA6, 0xBB});
+    memory.WriteByte(0xBB, 0xCC);
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0xCC, cpu.X);
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, LDX_ZeroPageY)
+{
+    SetupMemory(Memory::kRomStart, {0xB6, 0x5});
+    cpu.Y = 0x7F;
+    memory.WriteByte(0x5 + 0x7F, 0xCC);
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0xCC, cpu.X);
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, LDX_Absolute)
+{
+    SetupMemory(Memory::kRomStart, {0xAE, 0x72, 0x22});
+    memory.WriteByte(0x2272, 0x1A);
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0x1A, cpu.X);
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, LDX_AbsoluteY)
+{
+    SetupMemory(Memory::kRomStart, {0xBE, 0x72, 0x22});
+    cpu.Y = 0x43;
+    memory.WriteByte(0x2272 + 0x43, 0x1B);
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0x1B, cpu.X);
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, LDY_Immediate)
+{
+    SetupMemory(Memory::kRomStart, {0xA0, 0x22});
+    
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0x22, cpu.Y);
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, LDY_ZeroPage)
+{
+    SetupMemory(Memory::kRomStart, {0xA4, 0x72});
+    memory.WriteByte(0x72, 0xCB);
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0xCB, cpu.Y);
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, LDY_ZeroPageX)
+{
+    SetupMemory(Memory::kRomStart, {0xB4, 0x7});
+    cpu.X = 0xF1;
+    memory.WriteByte(0x7 + 0xF1, 0x11);
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0x11, cpu.Y);
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, LDY_Absolute)
+{
+    SetupMemory(Memory::kRomStart, {0xAC, 0x34, 0x12});
+    memory.WriteByte(0x1234, 0x59);
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0x59, cpu.Y);
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, LDY_AbsoluteX)
+{
+    SetupMemory(Memory::kRomStart, {0xBC, 0x34, 0x12});
+    cpu.X = 0xD7;
+    memory.WriteByte(0x1234 + 0xD7, 0xAA);
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(0xAA, cpu.Y);
+    AssertPCLocation(cpu, 3);
+}
+
+void AssertPCLocation(Cpu6502& cpu, int cycles)
+{
+    EXPECT_EQ(Memory::kRomStart + cycles, cpu.PC);
 }

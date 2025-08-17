@@ -176,6 +176,29 @@ enum class Opcode: uint8_t
     STY_ABSOLUTE = 0x8C,
 
     /**
+     * @brief Store X Register into Zero Page
+     * 
+     * The X register value is stored at the zero page address following the opcode.
+     */
+    STX_ZEROPAGE = 0x86,
+
+    /**
+     * @brief Store X Register into Zero Page Indexed by Y
+     * 
+     * The zero page address following the opcode is offset by the Y register to get the effective address.
+     * The X register value is stored at this address.
+     */
+    STX_ZEROPAGEY = 0x96,
+
+    /**
+     * @brief Load X Register from Absolute Address
+     * 
+     * The two bytes following the opcode form a 16-bit absolute address.
+     * The byte at this address is loaded into the X register.
+     */
+    STX_ABSOLUTE = 0x8E,
+
+    /**
      * @brief Store Accumulator to Zero Page Address
      * 
      * The zero page address following the opcode specifies where the accumulator value is stored.
