@@ -311,5 +311,7 @@ enum class Opcode: uint8_t
      * - Negative (N): Set if the result in A is negative.
      * - Zero (Z): Set if the result in A is zero.
      */
-    TYA_IMPLIED = 0x98
+    TYA_IMPLIED = 0x98,
+
+    ADC_IMMEDIATE = 0x69 
 };

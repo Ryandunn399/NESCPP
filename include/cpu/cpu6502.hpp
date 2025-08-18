@@ -483,6 +483,19 @@ private:
      * 
      */
     void TYA();
+   
+
+    /**
+     * @brief Performs the ADC instruction.
+     *
+     * @param address 
+     */
+    void ADC(uint16_t address);
+
+    /**
+     * @brief Performs ADC instruction using immediate addressing mode.
+     */
+    void ADCImmediate();
 
     /**
      * @brief Helper method that will evaluate a value and set the zero

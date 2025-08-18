@@ -57,6 +57,8 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::TXA_IMPLIED)]      = &Cpu6502::TXA;
     opcodeTable[static_cast<uint8_t>(Opcode::TAY_IMPLIED)]      = &Cpu6502::TAY;
     opcodeTable[static_cast<uint8_t>(Opcode::TYA_IMPLIED)]      = &Cpu6502::TYA;
+
+    opcodeTable[static_cast<uint8_t>(Opcode::ADC_IMMEDIATE)]    = &Cpu6502::ADCImmediate;
 }
 
 void Cpu6502::Reset()
@@ -71,6 +73,7 @@ void Cpu6502::Reset()
 
 void Cpu6502::ExecuteInstruction()
 {
+    StatusReg.SetRegister(0x00);
     uint8_t opcode = memory.ReadByte(PC);
     PC++;
 
@@ -366,6 +369,26 @@ void Cpu6502::TYA()
 {
     A = Y;
     SetNZFlags(A);
+}
+
+void Cpu6502::ADC(uint16_t address)
+{
+    uint8_t memoryValue = memory.ReadByte(address);
+    uint16_t result = A + memoryValue + (StatusReg.GetCarry() ? 1 : 0);
+
+    StatusReg.SetCarry(result > 0xFF);
+
+    bool overflow = ((A ^ result) & (memoryValue ^ result) & 0x80) != 0;
+    StatusReg.SetOverflow(overflow);
+
+    A = static_cast<uint8_t>(result & 0xFF);
+
+    SetNZFlags(A);
+}
+
+void Cpu6502::ADCImmediate()
+{
+    ADC(AddressingImmediate());
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)
