@@ -34,13 +34,13 @@ public:
      * @brief Construct a new Cpu6502 object
      * 
      */
-    Cpu6502(Memory& mem);
+    Cpu6502(Memory6502& mem);
 
     /**
      * @brief Program Counter.
      * 
      */
-    uint16_t PC = Memory::kRomStart;
+    uint16_t PC = Memory6502::kRomStart;
 
     /**
      * @brief Accumulator.
@@ -71,7 +71,7 @@ public:
      * @brief Class that handles functionality of the status register.
      * 
      */
-    StatusRegister StatusRegister;
+    StatusRegister StatusReg;
 
     /**
      * @brief Executes the next instruction in memory.
@@ -104,7 +104,7 @@ private:
      * @brief Memory manager class.
      * 
      */
-    Memory& memory;
+    Memory6502& memory;
 
     /**
      * @brief Keeps track of the stack pointer.

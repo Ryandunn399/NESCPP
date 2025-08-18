@@ -13,6 +13,6 @@ class NES
 public:
     NES();
 
-    Memory Memory;
+    Memory6502 Memory;
     Cpu6502 CPU;
 };

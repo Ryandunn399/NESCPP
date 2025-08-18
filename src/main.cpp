@@ -1,10 +1,11 @@
 #include <iostream>
+#include <cstdint>
 
 void printNumber(uint8_t value);
 
 int main() {
     std::cout << "Hello from a cross-platform C++ project!" << std::endl;
-    printNumber(0x1FF);
+    printNumber(0xAB);
     return 0;
 }
 

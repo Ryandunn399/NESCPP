@@ -8,6 +8,7 @@ Makefile
 install_manifest.txt
 Testing/
 CTestTestfile.cmake
+compile_commands.json
 *.cmake.user
 *.cmake
 

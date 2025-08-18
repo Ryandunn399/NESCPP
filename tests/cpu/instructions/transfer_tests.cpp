@@ -3,7 +3,7 @@
 
 TEST_F(Cpu6502Test, TAX)
 {
-    SetupMemory(Memory::kRomStart, {0xAA});
+    SetupMemory(Memory6502::kRomStart, {0xAA});
     cpu.A = 0x9;
     cpu.X = 0x1;
 
@@ -16,7 +16,7 @@ TEST_F(Cpu6502Test, TAX)
 
 TEST_F(Cpu6502Test, TXA)
 {
-    SetupMemory(Memory::kRomStart, {0x8A});
+    SetupMemory(Memory6502::kRomStart, {0x8A});
     cpu.A = 0x9;
     cpu.X = 0x1;
 
@@ -29,7 +29,7 @@ TEST_F(Cpu6502Test, TXA)
 
 TEST_F(Cpu6502Test, TAY)
 {
-    SetupMemory(Memory::kRomStart, {0xA8});
+    SetupMemory(Memory6502::kRomStart, {0xA8});
     cpu.A = 0x11;
     cpu.Y = 0xBB;
 
@@ -42,7 +42,7 @@ TEST_F(Cpu6502Test, TAY)
 
 TEST_F(Cpu6502Test, TYA)
 {
-    SetupMemory(Memory::kRomStart, {0x98});
+    SetupMemory(Memory6502::kRomStart, {0x98});
     cpu.A = 0x11;
     cpu.Y = 0xBB;
 

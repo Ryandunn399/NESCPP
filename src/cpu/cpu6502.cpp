@@ -2,7 +2,7 @@
 #include "cpu/opcode.hpp"
 #include "utils.hpp"
 
-Cpu6502::Cpu6502(Memory& mem) : memory(mem)
+Cpu6502::Cpu6502(Memory6502& mem) : memory(mem)
 {
     initOpcodeTable();
 }
@@ -61,8 +61,8 @@ void Cpu6502::initOpcodeTable()
 
 void Cpu6502::Reset()
 {
-    StatusRegister.SetRegister(0x00);
-    PC = Memory::kRomStart;
+    StatusReg.SetRegister(0x00);
+    PC = Memory6502::kRomStart;
     A = 0;
     X = 0;
     Y = 0;
@@ -370,8 +370,8 @@ void Cpu6502::TYA()
 
 void Cpu6502::SetNZFlags(uint8_t value)
 {
-    StatusRegister.SetZero(value == 0);
-    StatusRegister.SetNegative((value & 0x80) != 0);
+    StatusReg.SetZero(value == 0);
+    StatusReg.SetNegative((value & 0x80) != 0);
 }
 
 void Cpu6502::HandlePageCross(uint16_t baseAddress, uint16_t effectiveAddress)

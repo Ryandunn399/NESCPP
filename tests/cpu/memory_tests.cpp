@@ -4,7 +4,7 @@
 class MemoryTest : public ::testing::Test
 {
 protected:
-    Memory memory;
+    Memory6502 memory;
 
     void SetUp() override
     {
@@ -45,12 +45,12 @@ TEST_F(MemoryTest, StackOperations)
     // Push a byte
     memory.PushByte(sp, 0x42);
     EXPECT_EQ(0xFE, sp);  // SP should decrease
-    EXPECT_EQ(0x42, memory.ReadByte(Memory::kStackStart + 0xFF));
+    EXPECT_EQ(0x42, memory.ReadByte(Memory6502::kStackStart + 0xFF));
     
     // Push another byte
     memory.PushByte(sp, 0xAA);
     EXPECT_EQ(0xFD, sp);
-    EXPECT_EQ(0xAA, memory.ReadByte(Memory::kStackStart + 0xFE));
+    EXPECT_EQ(0xAA, memory.ReadByte(Memory6502::kStackStart + 0xFE));
     
     // Pop the bytes back (should be in reverse order)
     uint8_t popped1 = memory.PopByte(sp);
@@ -71,8 +71,8 @@ TEST_F(MemoryTest, StackWordOperations)
     EXPECT_EQ(0xFD, sp);  // SP decreases by 2
     
     // Check that high byte was pushed first, low byte second
-    EXPECT_EQ(0x12, memory.ReadByte(Memory::kStackStart + 0xFF));  // High byte
-    EXPECT_EQ(0x34, memory.ReadByte(Memory::kStackStart + 0xFE));  // Low byte
+    EXPECT_EQ(0x12, memory.ReadByte(Memory6502::kStackStart + 0xFF));  // High byte
+    EXPECT_EQ(0x34, memory.ReadByte(Memory6502::kStackStart + 0xFE));  // Low byte
     
     // Pop the word back
     uint16_t popped = memory.PopWord(sp);
@@ -89,9 +89,9 @@ TEST_F(MemoryTest, InvalidAddressThrows)
 TEST_F(MemoryTest, RomWriteProtection)
 {
     // Should throw when trying to write to ROM region
-    EXPECT_THROW(memory.WriteByte(Memory::kRomStart, 0x42), std::runtime_error);
+    EXPECT_THROW(memory.WriteByte(Memory6502::kRomStart, 0x42), std::runtime_error);
     EXPECT_THROW(memory.WriteByte(0xFFFF, 0x42), std::runtime_error);
-    EXPECT_THROW(memory.WriteWord(Memory::kRomStart, 0x1234), std::runtime_error);
+    EXPECT_THROW(memory.WriteWord(Memory6502::kRomStart, 0x1234), std::runtime_error);
 }
 
 TEST_F(MemoryTest, LoadProgram)
@@ -99,13 +99,13 @@ TEST_F(MemoryTest, LoadProgram)
     uint8_t program[] = {0xA9, 0x42, 0x85, 0x20};
     
     // Load program into ROM
-    memory.LoadProgram(program, sizeof(program), Memory::kRomStart);
+    memory.LoadProgram(program, sizeof(program), Memory6502::kRomStart);
     
     // Verify program was loaded correctly
-    EXPECT_EQ(0xA9, memory.ReadByte(Memory::kRomStart));
-    EXPECT_EQ(0x42, memory.ReadByte(Memory::kRomStart + 1));
-    EXPECT_EQ(0x85, memory.ReadByte(Memory::kRomStart + 2));
-    EXPECT_EQ(0x20, memory.ReadByte(Memory::kRomStart + 3));
+    EXPECT_EQ(0xA9, memory.ReadByte(Memory6502::kRomStart));
+    EXPECT_EQ(0x42, memory.ReadByte(Memory6502::kRomStart + 1));
+    EXPECT_EQ(0x85, memory.ReadByte(Memory6502::kRomStart + 2));
+    EXPECT_EQ(0x20, memory.ReadByte(Memory6502::kRomStart + 3));
 }
 
 TEST_F(MemoryTest, LoadProgramValidation)
@@ -119,5 +119,5 @@ TEST_F(MemoryTest, LoadProgramValidation)
     EXPECT_THROW(memory.LoadProgram(program, 0), std::invalid_argument);
     
     // Should throw if program too large
-    EXPECT_THROW(memory.LoadProgram(program, Memory::kMemorySize + 1), std::invalid_argument);
+    EXPECT_THROW(memory.LoadProgram(program, Memory6502::kMemorySize + 1), std::invalid_argument);
 }

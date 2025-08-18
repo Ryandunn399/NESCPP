@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <cstdint>
+#include <cstddef>
 
 #ifndef MEM_SIZE
 #define MEM_SIZE 65536
@@ -10,7 +11,7 @@
  * @brief Memory class that attempts to simplify memory abstractions.
  * 
  */
-class Memory
+class Memory6502
 {
 public:
     static constexpr size_t kMemorySize = 65536;
@@ -29,7 +30,7 @@ public:
      * @brief Construct a new Memory object.
      * 
      */
-    Memory();
+    Memory6502();
 
     /**
      * @brief Reads a byte from main memory.

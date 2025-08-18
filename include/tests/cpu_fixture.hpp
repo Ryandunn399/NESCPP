@@ -14,7 +14,7 @@ class Cpu6502Test : public ::testing::Test
 protected:
     NES nes;
     Cpu6502& cpu;
-    Memory& memory;
+    Memory6502& memory;
     
     Cpu6502Test() : nes(), cpu(nes.CPU), memory(nes.Memory)
     {
@@ -37,7 +37,7 @@ protected:
 
     void AssertPCLocation(Cpu6502& cpu, int cycles)
     {
-        EXPECT_EQ(Memory::kRomStart + cycles, cpu.PC);
+        EXPECT_EQ(Memory6502::kRomStart + cycles, cpu.PC);
     }
 };
 
