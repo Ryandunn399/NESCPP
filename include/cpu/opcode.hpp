@@ -312,6 +312,7 @@ enum class Opcode: uint8_t
      * - Zero (Z): Set if the result in A is zero.
      */
     TYA_IMPLIED = 0x98,
-
+    
+    /// @brief Opcode for the ADC Immediate instruction
     ADC_IMMEDIATE = 0x69 
 };
