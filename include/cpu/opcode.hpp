@@ -313,27 +313,51 @@ enum class Opcode: uint8_t
      */
     TYA_IMPLIED = 0x98,
     
-    /// @brief Opcode for the ADC Immediate instruction.
+    /**
+     * @brief Opcode for the ADC Immediate instruction.
+     * 
+     */
     ADC_IMMEDIATE = 0x69,
 
-    /// @brief Opcode for ADC Zero Page instruction.
+    /**
+     * @brief Opcode for ADC Zero Page instruction.
+     * 
+     */
     ADC_ZEROPAGE = 0x65,
 
-    /// @brief Opcode for ADC Zero Page X instruction.
+    /**
+     * @brief Opcode for ADC Zero Page X instruction.
+     * 
+     */
     ADC_ZEROPAGEX = 0x75,
 
-    /// @brief Opcode for ADC Absolute instruction.
+    /**
+     * @brief Opcode for ADC Absolute instruction.
+     * 
+     */
     ADC_ABSOLUTE = 0x6D,
 
-    /// @brief Opcode for ADC Absolute X instruction.
+    /**
+     * @brief Opcode for ADC Absolute X instruction.
+     * 
+     */
     ADC_ABSOLUTEX = 0x7D,
 
-    /// @brief Opcode for ADC Absolute Y instruction.
+    /**
+     * @brief Opcode for ADC Absolute Y instruction.
+     * 
+     */
     ADC_ABSOLUTEY = 0x79,
 
-    /// @brief Opcode for ADC Indirect X instruction.
+    /**
+     * @brief Opcode for ADC Indirect X instruction.
+     * 
+     */
     ADC_INDIRECTX = 0x61,
 
-    /// @brief Opcode for ADC Indirect Y instruction.
+    /**
+     * @brief Opcode for ADC Indirect Y instruction.
+     * 
+     */
     ADC_INDIRECTY = 0x71,
 };

@@ -1,5 +1,6 @@
 # CMake build folders and files
 build/
+.vs/
 _deps/
 CMakeFiles/
 CMakeCache.txt
