@@ -58,7 +58,15 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::TAY_IMPLIED)]      = &Cpu6502::TAY;
     opcodeTable[static_cast<uint8_t>(Opcode::TYA_IMPLIED)]      = &Cpu6502::TYA;
 
+    // ADC
     opcodeTable[static_cast<uint8_t>(Opcode::ADC_IMMEDIATE)]    = &Cpu6502::ADCImmediate;
+    opcodeTable[static_cast<uint8_t>(Opcode::ADC_ZEROPAGE)]     = &Cpu6502::ADCZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::ADC_ZEROPAGEX)]    = &Cpu6502::ADCZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::ADC_ABSOLUTE)]     = &Cpu6502::ADCAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::ADC_ABSOLUTEX)]    = &Cpu6502::ADCAbsoluteX;
+    opcodeTable[static_cast<uint8_t>(Opcode::ADC_ABSOLUTEY)]    = &Cpu6502::ADCAbsoluteY;
+    opcodeTable[static_cast<uint8_t>(Opcode::ADC_INDIRECTX)]    = &Cpu6502::ADCIndirectX;
+    opcodeTable[static_cast<uint8_t>(Opcode::ADC_INDIRECTY)]    = &Cpu6502::ADCIndirectY;
 }
 
 void Cpu6502::Reset()
@@ -389,6 +397,41 @@ void Cpu6502::ADC(uint16_t address)
 void Cpu6502::ADCImmediate()
 {
     ADC(AddressingImmediate());
+}
+
+void Cpu6502::ADCZeroPage()
+{
+    ADC(AddressingZeroPage());
+}
+
+void Cpu6502::ADCZeroPageX()
+{
+    ADC(AddressingZeroPageX());
+}
+
+void Cpu6502::ADCAbsolute()
+{
+    ADC(AddressingAbsolute());
+}
+
+void Cpu6502::ADCAbsoluteX()
+{
+    ADC(AddressingAbsoluteX());
+}
+
+void Cpu6502::ADCAbsoluteY()
+{
+    ADC(AddressingAbsoluteY());
+}
+
+void Cpu6502::ADCIndirectX()
+{
+    ADC(AddressingIndirectX());
+}
+
+void Cpu6502::ADCIndirectY()
+{
+    ADC(AddressingIndirectY());
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)

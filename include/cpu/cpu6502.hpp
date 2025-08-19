@@ -498,6 +498,41 @@ private:
     void ADCImmediate();
 
     /**
+     * @brief Performs ADC instruction using zero page addressing mode.
+     */
+    void ADCZeroPage();
+
+    /**
+     * @brief Performs ADC instruction using zero page x addressing mode.
+     */
+    void ADCZeroPageX();
+
+    /**
+     * @brief Performs ADC instruction using absolute addressing mode.
+     */
+    void ADCAbsolute();
+
+    /**
+     * @brief Performs ADC instruction using absolute x addressing mode.
+     */
+    void ADCAbsoluteX();
+    
+    /**
+     * @brief Performs ADC instruction using absolute y addressing mode.
+     */
+    void ADCAbsoluteY();
+
+    /**
+     * @brief Performs ADC instruction using indirect x addressing mode.
+     */
+    void ADCIndirectX();
+
+    /**
+     * @brief Performs ADC instruction using indirect y addressing mode.
+     */
+    void ADCIndirectY();
+
+    /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.
      * 
