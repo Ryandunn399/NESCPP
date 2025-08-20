@@ -166,3 +166,21 @@ TEST_F(Cpu6502Test, ADC_IndirectY)
     EXPECT_EQ(0, cpu.StatusReg.GetOverflow());
     AssertPCLocation(cpu, 2);
 }
+
+TEST_F(Cpu6502Test, SBC_Immediate_Normal)
+{
+    // Test normal SBC: 0x50 - 0x30 = 0x20 (with carry set)
+    SetupMemory(Memory6502::kRomStart, {0xE9, 0x30}); // SBC #$30
+    cpu.A = 0x50;
+    cpu.StatusReg.SetCarry(1); // No borrow
+    uint8_t expectedResult = 0x50 - 0x30;
+    
+    cpu.ExecuteInstruction();
+    
+    EXPECT_EQ(expectedResult, cpu.A);
+    EXPECT_EQ(1, cpu.StatusReg.GetCarry()); // No underflow
+    EXPECT_EQ(0, cpu.StatusReg.GetOverflow()); // No overflow
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    AssertPCLocation(cpu, 2);
+}

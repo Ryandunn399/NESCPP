@@ -533,6 +533,53 @@ private:
     void ADCIndirectY();
 
     /**
+     * @brief Performs SBC instruction using the value at that memory location.
+     *
+     * @param address address where our value is stored.
+     */
+    void SBC(uint16_t address);
+
+    /**
+     * @brief Performs SBC instruction using immediate addressing mode.
+     */
+    void SBCImmediate();
+
+    /**
+     * @brief Performs SBC instruction using zero page addressing mode.
+     */
+    void SBCZeroPage();
+    
+    /**
+     * @brief Performs SBC instruction using zero page x addressing mode.
+     */
+    void SBCZeroPageX();
+
+    /**
+     * @brief Performs SBC instruction using absolute addressing mode.
+     */
+    void SBCAbsolute();
+
+    /**
+     * @brief Performs SBC instruction using absolute x addressing mode.
+     */
+    void SBCAbsoluteX();
+
+    /**
+     * @brief Performs SBC instruction using absolute y addressing mode.
+     */
+    void SBCAbsoluteY();
+
+    /**
+     * @brief Performs SBC instruction using indirect x addressing mode.
+     */
+    void SBCIndirectX();
+
+    /**
+     * @brief Performs SBC instruction using indirect y addressing mode.
+     */
+    void SBCIndirectY();
+
+    /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.
      * 

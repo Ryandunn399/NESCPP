@@ -336,4 +336,28 @@ enum class Opcode: uint8_t
 
     /// @brief Opcode for ADC Indirect Y instruction.
     ADC_INDIRECTY = 0x71,
+
+    /// @brief Opcode for SBC Immediate instruction.
+    SBC_IMMEDIATE = 0xE9,
+
+    /// @brief Opcode for SBC Zero Page instruction.
+    SBC_ZEROPAGE = 0xE5,
+
+    /// @brief Opcode for SBC Zero Page X instruction.
+    SBC_ZEROPAGEX = 0xF5,
+
+    /// @brief Opcode for SBC Absolute instruction.
+    SBC_ABSOLUTE = 0xED,
+
+    /// @brief Opcode for SBC Absolute X instruction.
+    SBC_ABSOLUTEX = 0xFD,
+
+    /// @brief Opcode for SBC Absolute Y instruction.
+    SBC_ABSOLUTEY = 0xF9,
+
+    /// @brief Opcode for SBC Indirect X instruction.
+    SBC_INDIRECTX = 0xE1,
+
+    /// @brief Opcode for SBC Indirect Y instruction.
+    SBC_INDIRECTY = 0xF1,
 };

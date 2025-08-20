@@ -67,6 +67,9 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::ADC_ABSOLUTEY)]    = &Cpu6502::ADCAbsoluteY;
     opcodeTable[static_cast<uint8_t>(Opcode::ADC_INDIRECTX)]    = &Cpu6502::ADCIndirectX;
     opcodeTable[static_cast<uint8_t>(Opcode::ADC_INDIRECTY)]    = &Cpu6502::ADCIndirectY;
+
+    // SBC
+    opcodeTable[static_cast<uint8_t>(Opcode::SBC_IMMEDIATE)]    = &Cpu6502::SBCImmediate;
 }
 
 void Cpu6502::Reset()
@@ -432,6 +435,24 @@ void Cpu6502::ADCIndirectX()
 void Cpu6502::ADCIndirectY()
 {
     ADC(AddressingIndirectY());
+}
+
+void Cpu6502::SBC(uint16_t address)
+{
+    uint8_t memoryValue = memory.ReadByte(address);
+    
+    uint16_t result = A - memoryValue - !StatusReg.GetCarry(); 
+    
+    StatusReg.SetCarry(!(result > 0xFF));
+    StatusReg.SetOverflow((result ^ A) & (result ^ memoryValue) & 0x80);
+    
+    A = static_cast<uint8_t>(result & 0xFF);
+    SetNZFlags(A);
+}
+
+void Cpu6502::SBCImmediate()
+{
+    SBC(AddressingImmediate());
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)
