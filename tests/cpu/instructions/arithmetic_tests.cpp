@@ -209,3 +209,40 @@ TEST_F(Cpu6502Test, SBC_Immediate_Normal)
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     AssertPCLocation(cpu, 2);
 }
+
+TEST_F(Cpu6502Test, SBC_Zero_Page)
+{
+    cpu.StatusReg.SetRegister(0x00);
+    SetupMemory(Memory6502::kRomStart, { 0xE5, 0x42 });
+    SetupMemory(0x42, { 0x5 });
+    cpu.A = 0x7A;
+    uint8_t expectedResult = 0x7A - 0x5 - (cpu.StatusReg.GetCarry() ? 0 : 1);
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedResult, cpu.A);
+    EXPECT_EQ(1, cpu.StatusReg.GetCarry()); // No underflow
+    EXPECT_EQ(0, cpu.StatusReg.GetOverflow()); // No overflow
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, SBC_Zero_PageX)
+{
+    cpu.StatusReg.SetRegister(0x00);
+    SetupMemory(Memory6502::kRomStart, { 0xF5, 0x42 });
+    SetupMemory(0x42 + 0x8, { 0x5 });
+    cpu.X = 0x8;
+    cpu.A = 0x7A;
+    uint8_t expectedResult = 0x7A - 0x5 - (cpu.StatusReg.GetCarry() ? 0 : 1);
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedResult, cpu.A);
+    EXPECT_EQ(1, cpu.StatusReg.GetCarry()); // No underflow
+    EXPECT_EQ(0, cpu.StatusReg.GetOverflow()); // No overflow
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    AssertPCLocation(cpu, 2);
+}
