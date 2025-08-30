@@ -84,7 +84,6 @@ void Cpu6502::Reset()
 
 void Cpu6502::ExecuteInstruction()
 {
-    StatusReg.SetRegister(0x00);
     uint8_t opcode = memory.ReadByte(PC);
     PC++;
 
@@ -441,7 +440,7 @@ void Cpu6502::SBC(uint16_t address)
 {
     uint8_t memoryValue = memory.ReadByte(address);
     
-    uint16_t result = A - memoryValue - !StatusReg.GetCarry(); 
+    uint16_t result = A - memoryValue - (StatusReg.GetCarry() ? 0 : 1); 
     
     StatusReg.SetCarry(!(result > 0xFF));
     StatusReg.SetOverflow((result ^ A) & (result ^ memoryValue) & 0x80);
