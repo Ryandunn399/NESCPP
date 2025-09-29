@@ -325,3 +325,82 @@ TEST_F(Cpu6502Test, SBC_IndirectY)
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     AssertPCLocation(cpu, 2);
 }
+
+TEST_F(Cpu6502Test, SBC_Absolute_AllFlags)
+{
+    // SBC Absolute: opcode 0xED
+    SetupMemory(Memory6502::kRomStart, { 0xED, 0x00, 0x20 }); // SBC $2000
+    SetupMemory(0x2000, { 0x50 }); // Operand at $2000
+    
+    cpu.A = 0x50;        // A = 0x50 (80 in decimal, positive in signed)
+    cpu.StatusReg.SetCarry(1); // Set carry (no borrow)
+    
+    // 0x50 - 0x50 = 0x00
+    // This should trigger:
+    // Z = 1 (result is zero)
+    // C = 1 (no borrow needed, A >= M)
+    // N = 0 (bit 7 is 0)
+    // V = 0 (no signed overflow)
+    
+    cpu.ExecuteInstruction();
+    
+    EXPECT_EQ(0x00, cpu.A);
+    EXPECT_EQ(1, cpu.StatusReg.GetZero());     // Result is zero
+    EXPECT_EQ(1, cpu.StatusReg.GetCarry());    // No borrow
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative()); // Positive result
+    EXPECT_EQ(0, cpu.StatusReg.GetOverflow()); // No overflow
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, SBC_Absolute_NegativeAndOverflow)
+{
+    // Test that triggers Negative and Overflow flags
+    SetupMemory(Memory6502::kRomStart, { 0xED, 0x00, 0x20 }); // SBC $2000
+    SetupMemory(0x2000, { 0x01 }); // Subtract 1
+    
+    cpu.A = 0x80;        // A = 0x80 (-128 in signed two's complement)
+    uint8_t expectedResult = 0x80 - 0x1 - GetSbcCarry();
+    
+    // 0x80 - 0x01 = 0x7F
+    // In signed terms: -128 - 1 = -129, but result is +127 (overflow!)
+    // This should trigger:
+    // V = 1 (signed overflow: negative - positive = positive)
+    // N = 0 (bit 7 is 0, result is 0x7F)
+    // C = 1 (no borrow, 0x80 >= 0x01)
+    // Z = 0 (result is not zero)
+    
+    cpu.ExecuteInstruction();
+    
+    EXPECT_EQ(expectedResult, cpu.A);
+    EXPECT_EQ(1, cpu.StatusReg.GetOverflow()); // Signed overflow occurred
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative()); // Result is positive
+    EXPECT_EQ(1, cpu.StatusReg.GetCarry());    // No borrow
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());     // Not zero
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, SBC_Absolute_NegativeAndBorrow)
+{
+    // Test that triggers Negative flag and borrow (C=0)
+    SetupMemory(Memory6502::kRomStart, { 0xED, 0x00, 0x20 }); // SBC $2000
+    SetupMemory(0x2000, { 0x10 }); // Subtract 0x10
+    
+    cpu.A = 0x05;        // A = 0x05
+    uint8_t expectedResult = 0x05 - 0x10 - GetSbcCarry();
+    
+    // 0x05 - 0x10 = 0xF5 (wraps around, -11 in signed)
+    // This should trigger:
+    // N = 1 (bit 7 is 1, result is 0xF5)
+    // C = 0 (borrow occurred, A < M)
+    // Z = 0 (result is not zero)
+    // V = 0 (no signed overflow)
+    
+    cpu.ExecuteInstruction();
+    
+    EXPECT_EQ(expectedResult, cpu.A);
+    EXPECT_EQ(1, cpu.StatusReg.GetNegative()); // Negative result
+    EXPECT_EQ(0, cpu.StatusReg.GetCarry());    // Borrow occurred
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());     // Not zero
+    EXPECT_EQ(0, cpu.StatusReg.GetOverflow()); // No overflow
+    AssertPCLocation(cpu, 3);
+}

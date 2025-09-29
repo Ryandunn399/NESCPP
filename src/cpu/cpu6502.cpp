@@ -450,7 +450,7 @@ void Cpu6502::SBC(uint16_t address)
     uint16_t result = A - memoryValue - (StatusReg.GetCarry() ? 0 : 1); 
     
     StatusReg.SetCarry(!(result > 0xFF));
-    StatusReg.SetOverflow((result ^ A) & (result ^ memoryValue) & 0x80);
+    StatusReg.SetOverflow((result ^ A) & (result ^ ~memoryValue) & 0x80);
     
     A = static_cast<uint8_t>(result & 0xFF);
     SetNZFlags(A);
