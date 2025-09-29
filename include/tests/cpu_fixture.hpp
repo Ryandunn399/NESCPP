@@ -24,6 +24,7 @@ protected:
     {
         // CPU is initialized with fresh state
         // PC starts at ROM area, all registers are 0
+        cpu.StatusReg.SetRegister(0x00);
     }
     
     // Helper to set up memory with test data
@@ -38,6 +39,11 @@ protected:
     void AssertPCLocation(Cpu6502& cpu, int cycles)
     {
         EXPECT_EQ(Memory6502::kRomStart + cycles, cpu.PC);
+    }
+
+    int GetSbcCarry()
+    {
+        return (cpu.StatusReg.GetCarry() ? 0 : 1);
     }
 };
 

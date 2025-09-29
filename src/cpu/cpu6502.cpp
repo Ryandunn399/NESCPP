@@ -72,6 +72,11 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::SBC_IMMEDIATE)]    = &Cpu6502::SBCImmediate;
     opcodeTable[static_cast<uint8_t>(Opcode::SBC_ZEROPAGE)]     = &Cpu6502::SBCZeroPage;
     opcodeTable[static_cast<uint8_t>(Opcode::SBC_ZEROPAGEX)]    = &Cpu6502::SBCZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::SBC_ABSOLUTE)]     = &Cpu6502::SBCAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::SBC_ABSOLUTEX)]    = &Cpu6502::SBCAbsoluteX;
+    opcodeTable[static_cast<uint8_t>(Opcode::SBC_ABSOLUTEY)]    = &Cpu6502::SBCAbsoluteY;
+    opcodeTable[static_cast<uint8_t>(Opcode::SBC_INDIRECTX)]    = &Cpu6502::SBCIndirectX;
+    opcodeTable[static_cast<uint8_t>(Opcode::SBC_INDIRECTY)]    = &Cpu6502::SBCIndirectY;
 }
 
 void Cpu6502::Reset()
@@ -479,6 +484,16 @@ void Cpu6502::SBCAbsoluteX()
 void Cpu6502::SBCAbsoluteY()
 {
     SBC(AddressingAbsoluteY());
+}
+
+void Cpu6502::SBCIndirectX()
+{
+    SBC(AddressingIndirectX());
+}
+
+void Cpu6502::SBCIndirectY()
+{
+    SBC(AddressingIndirectY());
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)
