@@ -407,5 +407,47 @@ enum class Opcode: uint8_t
     DEC_ABSOLUTE = 0xCE,
 
     /// @brief Opcode for DEC Absolute X instruction.
-    DEC_ABSOLUTEX = 0xDE
+    DEC_ABSOLUTEX = 0xDE,
+
+    /// @brief Opcode for implied INX instruction.
+    INX = 0xE8,
+
+    /// @brief Opcode for implied DEX instruction.
+    DEX = 0xCA,
+
+    /// @brief Opcode for implied INY instruction.
+    INY = 0xC8,
+
+    /// @brief Opcode for implied DEY instruction.
+    DEY = 0x88,
+
+    /// @brief Opcode for ASL Accumulator instruction.
+    ASL_ACCUMULATOR = 0x0A,
+
+    /// @brief Opcode for ASL Zero Page instruction.
+    ASL_ZEROPAGE = 0x06,
+
+    /// @brief Opcode for ASL Zero Page X instruction.
+    ASL_ZEROPAGEX = 0x16,
+
+    /// @brief Opcode for ASL Absolute instruction.
+    ASL_ABSOLUTE = 0x0E,
+
+    /// @brief Opcode for ASL Absolute X instruction.
+    ASL_ABSOLUTEX = 0x1E,
+
+    /// @brief Opcode for LSR Accumulator instruction.
+    LSR_ACCUMULATOR = 0x4A,
+
+    /// @brief Opcode for LSR Zero Page instruction.
+    LSR_ZEROPAGE = 0x46,
+
+    /// @brief Opcode for LSR Zero Page X instruction.
+    LSR_ZEROPAGEX = 0x56,
+
+    /// @brief Opcode for LSR Absolute instruction.
+    LSR_ABSOLUTE = 0x4E,
+
+    /// @brief Opcode for LSR Absolute X instruction.
+    LSR_ABSOLUTEX = 0x5E,
 };

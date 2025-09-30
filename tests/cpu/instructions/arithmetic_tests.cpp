@@ -528,3 +528,59 @@ TEST_F(Cpu6502Test, DEC_AbsoluteX)
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     AssertPCLocation(cpu, 3);
 }
+
+TEST_F(Cpu6502Test, INX)
+{
+    SetupMemory(Memory6502::kRomStart, { 0xE8 });
+    cpu.X = 0x32;
+    uint8_t expectedResult = 0x32 + 1;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedResult, cpu.X);
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    AssertPCLocation(cpu, 1);
+}
+
+TEST_F(Cpu6502Test, DEX)
+{
+    SetupMemory(Memory6502::kRomStart, { 0xCA });
+    cpu.X = 0x32;
+    uint8_t expectedResult = 0x32 - 1;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedResult, cpu.X);
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    AssertPCLocation(cpu, 1);
+}
+
+TEST_F(Cpu6502Test, INY)
+{
+    SetupMemory(Memory6502::kRomStart, { 0xC8 });
+    cpu.Y = 0x32;
+    uint8_t expectedResult = 0x32 + 1;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedResult, cpu.Y);
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    AssertPCLocation(cpu, 1);
+}
+
+TEST_F(Cpu6502Test, DEY)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x88 });
+    cpu.Y = 0x32;
+    uint8_t expectedResult = 0x32 - 1;
+
+    cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedResult, cpu.Y);
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    AssertPCLocation(cpu, 1);
+}

@@ -89,6 +89,32 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::DEC_ZEROPAGEX)]    = &Cpu6502::DECZeroPageX;
     opcodeTable[static_cast<uint8_t>(Opcode::DEC_ABSOLUTE)]     = &Cpu6502::DECAbsolute;
     opcodeTable[static_cast<uint8_t>(Opcode::DEC_ABSOLUTEX)]    = &Cpu6502::DECAbsoluteX;
+
+    // INX
+    opcodeTable[static_cast<uint8_t>(Opcode::INX)]              = &Cpu6502::INX;
+    
+    // DEX
+    opcodeTable[static_cast<uint8_t>(Opcode::DEX)]              = &Cpu6502::DEX;
+
+    // INY
+    opcodeTable[static_cast<uint8_t>(Opcode::INY)]              = &Cpu6502::INY;
+    
+    // DEY
+    opcodeTable[static_cast<uint8_t>(Opcode::DEY)]              = &Cpu6502::DEY;
+
+    // ASL
+    opcodeTable[static_cast<uint8_t>(Opcode::ASL_ACCUMULATOR)]  = &Cpu6502::ASLAccumulator;
+    opcodeTable[static_cast<uint8_t>(Opcode::ASL_ZEROPAGE)]  = &Cpu6502::ASLZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::ASL_ZEROPAGEX)]  = &Cpu6502::ASLZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::ASL_ABSOLUTE)]  = &Cpu6502::ASLAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::ASL_ABSOLUTEX)]  = &Cpu6502::ASLAbsoluteX;
+
+    // LSR
+    opcodeTable[static_cast<uint8_t>(Opcode::LSR_ACCUMULATOR)]  = &Cpu6502::LSRAccumulator;
+    opcodeTable[static_cast<uint8_t>(Opcode::LSR_ZEROPAGE)]  = &Cpu6502::LSRZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::LSR_ZEROPAGEX)]  = &Cpu6502::LSRZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::LSR_ABSOLUTE)]  = &Cpu6502::LSRAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::LSR_ABSOLUTEX)]  = &Cpu6502::LSRAbsoluteX;
 }
 
 void Cpu6502::Reset()
@@ -560,6 +586,115 @@ void Cpu6502::DECAbsolute()
 void Cpu6502::DECAbsoluteX()
 {
     DEC(AddressingAbsoluteX());
+}
+
+void Cpu6502::INX()
+{
+    X = X + 1;
+    SetNZFlags(X);
+}
+
+void Cpu6502::DEX()
+{
+    X = X - 1;
+    SetNZFlags(X);
+}
+
+void Cpu6502::INY()
+{
+    Y = Y + 1;
+    SetNZFlags(Y);
+}
+
+void Cpu6502::DEY()
+{
+    Y = Y - 1;
+    SetNZFlags(Y);
+}
+
+void Cpu6502::ASL(uint16_t address)
+{
+    uint8_t memoryValue = memory.ReadByte(address);
+    uint8_t carryValue = memoryValue & 0x80;
+    
+    uint8_t result = memoryValue << 1;
+    memory.WriteByte(address, result);
+
+    StatusReg.SetCarry(carryValue);
+    SetNZFlags(result);
+
+}
+
+void Cpu6502::ASLAccumulator()
+{
+    uint8_t carryValue = A & 0x80;
+
+    A = A << 1;
+
+    StatusReg.SetCarry(carryValue);
+    SetNZFlags(A);
+}
+
+void Cpu6502::ASLZeroPage()
+{
+    ASL(AddressingZeroPage());
+}
+
+void Cpu6502::ASLZeroPageX()
+{
+    ASL(AddressingZeroPageX());
+}
+
+void Cpu6502::ASLAbsolute()
+{
+    ASL(AddressingAbsolute());
+}
+
+void Cpu6502::ASLAbsoluteX()
+{
+    ASL(AddressingAbsoluteX());
+}
+
+void Cpu6502::LSR(uint16_t address)
+{
+    uint8_t memoryValue = memory.ReadByte(address);
+    uint8_t carryValue = memoryValue & 0x1;
+    
+    uint8_t result = memoryValue >> 1;
+    memory.WriteByte(address, result);
+
+    StatusReg.SetCarry(carryValue);
+    SetNZFlags(result);
+}
+
+void Cpu6502::LSRAccumulator()
+{
+    uint8_t carryValue = A & 0x1;
+
+    A = A >> 1;
+
+    StatusReg.SetCarry(carryValue);
+    SetNZFlags(A);
+}
+
+void Cpu6502::LSRZeroPage()
+{
+    LSR(AddressingZeroPage());
+}
+
+void Cpu6502::LSRZeroPageX()
+{
+    LSR(AddressingZeroPageX());
+}
+
+void Cpu6502::LSRAbsolute()
+{
+    LSR(AddressingAbsolute());
+}
+
+void Cpu6502::LSRAbsoluteX()
+{
+    LSR(AddressingAbsoluteX());
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)

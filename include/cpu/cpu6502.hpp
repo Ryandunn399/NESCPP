@@ -609,6 +609,54 @@ private:
     /// @brief Performs DEC instruction using absolute x addressing mode.
     void DECAbsoluteX();
 
+    /// @brief Performs INX instruction, addressing mode is implied.
+    void INX();
+
+    /// @brief Performs DEX instruction, addressing mode is implied.
+    void DEX();
+
+    /// @brief Performs INY instruction, addressing mode is implied.
+    void INY();
+
+    /// @brief Performs DEY instruction, addressing mode is implied.
+    void DEY();
+
+    /// @brief Performs ASL instruction using the passed address.
+    void ASL(uint16_t address);
+
+    /// @brief Performs ASL instruction using accumulator addressing mode.
+    void ASLAccumulator();
+
+    /// @brief Performs ASL instruction using zero page addressing mode.
+    void ASLZeroPage();
+
+    /// @brief Performs ASL instruction using zero page x addressing mode.
+    void ASLZeroPageX();
+
+    /// @brief Performs ASL instruction using absolute addressing mode.
+    void ASLAbsolute();
+
+    /// @brief Performs ASL instruction using absolute x addressing mode.
+    void ASLAbsoluteX();
+
+    /// @brief Performs LSR instruction using the passed address.
+    void LSR(uint16_t address);
+
+    /// @brief Performs LSR using accumulator addressing mode.
+    void LSRAccumulator();
+
+    /// @brief Performs LSR using zero page addressing mode.
+    void LSRZeroPage();
+
+    /// @brief Performs LSR using zero page x addressing mode.
+    void LSRZeroPageX();
+
+    /// @brief Performs LSR using absolute addressing mode.
+    void LSRAbsolute();
+
+    /// @brief Performs LSR using absolute x addressing mode.
+    void LSRAbsoluteX();
+
     /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.
