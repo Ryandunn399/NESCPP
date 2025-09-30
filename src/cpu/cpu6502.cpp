@@ -104,17 +104,31 @@ void Cpu6502::initOpcodeTable()
 
     // ASL
     opcodeTable[static_cast<uint8_t>(Opcode::ASL_ACCUMULATOR)]  = &Cpu6502::ASLAccumulator;
-    opcodeTable[static_cast<uint8_t>(Opcode::ASL_ZEROPAGE)]  = &Cpu6502::ASLZeroPage;
-    opcodeTable[static_cast<uint8_t>(Opcode::ASL_ZEROPAGEX)]  = &Cpu6502::ASLZeroPageX;
-    opcodeTable[static_cast<uint8_t>(Opcode::ASL_ABSOLUTE)]  = &Cpu6502::ASLAbsolute;
-    opcodeTable[static_cast<uint8_t>(Opcode::ASL_ABSOLUTEX)]  = &Cpu6502::ASLAbsoluteX;
+    opcodeTable[static_cast<uint8_t>(Opcode::ASL_ZEROPAGE)]     = &Cpu6502::ASLZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::ASL_ZEROPAGEX)]    = &Cpu6502::ASLZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::ASL_ABSOLUTE)]     = &Cpu6502::ASLAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::ASL_ABSOLUTEX)]    = &Cpu6502::ASLAbsoluteX;
 
     // LSR
     opcodeTable[static_cast<uint8_t>(Opcode::LSR_ACCUMULATOR)]  = &Cpu6502::LSRAccumulator;
-    opcodeTable[static_cast<uint8_t>(Opcode::LSR_ZEROPAGE)]  = &Cpu6502::LSRZeroPage;
-    opcodeTable[static_cast<uint8_t>(Opcode::LSR_ZEROPAGEX)]  = &Cpu6502::LSRZeroPageX;
-    opcodeTable[static_cast<uint8_t>(Opcode::LSR_ABSOLUTE)]  = &Cpu6502::LSRAbsolute;
-    opcodeTable[static_cast<uint8_t>(Opcode::LSR_ABSOLUTEX)]  = &Cpu6502::LSRAbsoluteX;
+    opcodeTable[static_cast<uint8_t>(Opcode::LSR_ZEROPAGE)]     = &Cpu6502::LSRZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::LSR_ZEROPAGEX)]    = &Cpu6502::LSRZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::LSR_ABSOLUTE)]     = &Cpu6502::LSRAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::LSR_ABSOLUTEX)]    = &Cpu6502::LSRAbsoluteX;
+
+    // ROL
+    opcodeTable[static_cast<uint8_t>(Opcode::ROL_ACCUMULATOR)]  = &Cpu6502::ROLAccumulator;
+    opcodeTable[static_cast<uint8_t>(Opcode::ROL_ZEROPAGE)]     = &Cpu6502::ROLZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::ROL_ZEROPAGEX)]    = &Cpu6502::ROLZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::ROL_ABSOLUTE)]     = &Cpu6502::ROLAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::ROL_ABSOLUTEX)]    = &Cpu6502::ROLAbsoluteX;
+
+    // ROR
+    opcodeTable[static_cast<uint8_t>(Opcode::ROR_ACCUMULATOR)]  = &Cpu6502::RORAccumulator;
+    opcodeTable[static_cast<uint8_t>(Opcode::ROR_ZEROPAGE)]     = &Cpu6502::RORZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::ROR_ZEROPAGEX)]    = &Cpu6502::RORZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::ROR_ABSOLUTE)]     = &Cpu6502::RORAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::ROR_ABSOLUTEX)]    = &Cpu6502::RORAbsoluteX;
 }
 
 void Cpu6502::Reset()
@@ -695,6 +709,90 @@ void Cpu6502::LSRAbsolute()
 void Cpu6502::LSRAbsoluteX()
 {
     LSR(AddressingAbsoluteX());
+}
+
+void Cpu6502::ROL(uint16_t address)
+{
+    uint8_t memoryValue = memory.ReadByte(address);
+    int carryValue = memoryValue & 0x80;
+
+    uint8_t result = (memoryValue << 1) | StatusReg.GetCarry();
+    memory.WriteByte(address, result);
+
+    StatusReg.SetCarry(carryValue);
+    SetNZFlags(result);
+}
+
+void Cpu6502::ROLAccumulator()
+{
+    int carryValue = A & 0x80;
+    
+    A = (A << 1) | StatusReg.GetCarry();
+
+    StatusReg.SetCarry(carryValue);
+    SetNZFlags(A);
+}
+
+void Cpu6502::ROLZeroPage()
+{
+    ROL(AddressingZeroPage());
+}
+
+void Cpu6502::ROLZeroPageX()
+{
+    ROL(AddressingZeroPageX());
+}
+
+void Cpu6502::ROLAbsolute()
+{
+    ROL(AddressingAbsolute());
+}
+
+void Cpu6502::ROLAbsoluteX()
+{
+    ROL(AddressingAbsoluteX());
+}
+
+void Cpu6502::ROR(uint16_t address)
+{
+    uint8_t memoryValue = memory.ReadByte(address);
+    int carryValue = memoryValue & 0x1;
+
+    uint8_t result = (memoryValue >> 1) | (StatusReg.GetCarry() << 7);
+    memory.WriteByte(address, result);
+
+    StatusReg.SetCarry(carryValue);
+    SetNZFlags(result);
+}
+
+void Cpu6502::RORAccumulator()
+{
+    int carryValue = A & 0x1;
+    
+    A = (A >> 1) | (StatusReg.GetCarry() << 7);
+
+    StatusReg.SetCarry(carryValue);
+    SetNZFlags(A);
+}
+
+void Cpu6502::RORZeroPage()
+{
+    ROR(AddressingZeroPage());
+}
+
+void Cpu6502::RORZeroPageX()
+{
+    ROR(AddressingZeroPageX());
+}
+
+void Cpu6502::RORAbsolute()
+{
+    ROR(AddressingAbsolute());
+}
+
+void Cpu6502::RORAbsoluteX()
+{
+    ROR(AddressingAbsoluteX());
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)

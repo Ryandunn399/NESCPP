@@ -657,6 +657,42 @@ private:
     /// @brief Performs LSR using absolute x addressing mode.
     void LSRAbsoluteX();
 
+    /// @brief Performs the ROL instruction using the value at that address.
+    void ROL(uint16_t address);
+
+    /// @brief Performs ROL using accumulator addressing mode.
+    void ROLAccumulator();
+
+    /// @brief Performs ROL using zero page addressing mode.
+    void ROLZeroPage();
+
+    /// @brief Performs ROL using zero page x addressing mode.
+    void ROLZeroPageX();
+
+    /// @brief Performs ORL using absolute addressing mode.
+    void ROLAbsolute();
+
+    /// @brief Performs ROL using absolute x addressing mode.
+    void ROLAbsoluteX();
+
+    /// @brief Performs the ROR instruction using the value at that address.
+    void ROR(uint16_t address);
+
+    /// @brief Performs ROR using accumulator addressing mode.
+    void RORAccumulator();
+
+    /// @brief Performs ROR using zero page addressing mode.
+    void RORZeroPage();
+
+    /// @brief Performs ROR using zero page x addressing mode.
+    void RORZeroPageX();
+
+    /// @brief Performs ROR using absolute addressing mode.
+    void RORAbsolute();
+
+    /// @brief Performs ROR using absolute x addressing mode.
+    void RORAbsoluteX();
+
     /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.

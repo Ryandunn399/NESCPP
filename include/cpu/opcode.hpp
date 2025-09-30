@@ -450,4 +450,34 @@ enum class Opcode: uint8_t
 
     /// @brief Opcode for LSR Absolute X instruction.
     LSR_ABSOLUTEX = 0x5E,
+
+    /// @brief Opcode for ROL Accumulator instruction.
+    ROL_ACCUMULATOR = 0x2A,
+    
+    /// @brief Opcode for ROL Zero Page instruction.
+    ROL_ZEROPAGE = 0x26,
+
+    /// @brief Opcode for ROL Zero Page X instruction.
+    ROL_ZEROPAGEX = 0x36,
+
+    /// @brief Opcode for ROL Absolute instruction.
+    ROL_ABSOLUTE = 0x2E,
+
+    /// @brief Opcode for ROL Absolute X instruction.
+    ROL_ABSOLUTEX = 0x3E,
+
+    /// @brief Opcode for ROR Accumulator instruction.
+    ROR_ACCUMULATOR = 0x6A,
+
+    /// @brief Opcode for ROR Zero Page instruction.
+    ROR_ZEROPAGE = 0x66,
+
+    /// @brief Opcode for ROR Zero Page X instruction.
+    ROR_ZEROPAGEX = 0x76,
+
+    /// @brief Opcode for ROR Absolute instruction.
+    ROR_ABSOLUTE = 0x6E,
+
+    /// @brief Opcode for ROR Absolute X instruction.
+    ROR_ABSOLUTEX = 0x7E,
 };
