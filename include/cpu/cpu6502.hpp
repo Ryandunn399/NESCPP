@@ -594,6 +594,21 @@ private:
     /// @brief Performs INC instruction using absolute x addressing mode.
     void INCAbsoluteX();
 
+    /// @brief Performs DEC instruction using value at that address.
+    void DEC(uint16_t address);
+
+    /// @brief Performs DEC instruction using zero page addressing mode.
+    void DECZeroPage();
+
+    /// @brief Performs DEC instruction using zero page x addressing mode.
+    void DECZeroPageX();
+
+    /// @brief Performs DEC instruction using absolute addressing mode.
+    void DECAbsolute();
+
+    /// @brief Performs DEC instruction using absolute x addressing mode.
+    void DECAbsoluteX();
+
     /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.

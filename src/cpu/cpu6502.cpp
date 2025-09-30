@@ -83,6 +83,12 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::INC_ZEROPAGEX)]    = &Cpu6502::INCZeroPageX;
     opcodeTable[static_cast<uint8_t>(Opcode::INC_ABSOLUTE)]     = &Cpu6502::INCAbsolute;
     opcodeTable[static_cast<uint8_t>(Opcode::INC_ABSOLUTEX)]    = &Cpu6502::INCAbsoluteX;
+
+    // DEC
+    opcodeTable[static_cast<uint8_t>(Opcode::DEC_ZEROPAGE)]     = &Cpu6502::DECZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::DEC_ZEROPAGEX)]    = &Cpu6502::DECZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::DEC_ABSOLUTE)]     = &Cpu6502::DECAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::DEC_ABSOLUTEX)]    = &Cpu6502::DECAbsoluteX;
 }
 
 void Cpu6502::Reset()
@@ -527,6 +533,33 @@ void Cpu6502::INCAbsolute()
 void Cpu6502::INCAbsoluteX()
 {
     INC(AddressingAbsoluteX());
+}
+
+void Cpu6502::DEC(uint16_t address)
+{
+    uint8_t result = memory.ReadByte(address) - 1;
+    memory.WriteByte(address, result);
+    SetNZFlags(result);
+}
+
+void Cpu6502::DECZeroPage()
+{
+    DEC(AddressingZeroPage());
+}
+
+void Cpu6502::DECZeroPageX()
+{
+    DEC(AddressingZeroPageX());
+}
+
+void Cpu6502::DECAbsolute()
+{
+    DEC(AddressingAbsolute());
+}
+
+void Cpu6502::DECAbsoluteX()
+{
+    DEC(AddressingAbsoluteX());
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)

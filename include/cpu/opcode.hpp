@@ -396,4 +396,16 @@ enum class Opcode: uint8_t
 
     /// @brief Opcode for INC Absolute X instruction.
     INC_ABSOLUTEX = 0xFE,
+
+    /// @brief Opcode for DEC Zero Page instruction.
+    DEC_ZEROPAGE = 0xC6,
+
+    /// @brief Opcode for DEC Zero Page X instruction.
+    DEC_ZEROPAGEX = 0xD6,
+
+    /// @brief Opcode for DEC Absolute instruction.
+    DEC_ABSOLUTE = 0xCE,
+
+    /// @brief Opcode for DEC Absolute X instruction.
+    DEC_ABSOLUTEX = 0xDE
 };
