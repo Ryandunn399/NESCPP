@@ -404,3 +404,65 @@ TEST_F(Cpu6502Test, SBC_Absolute_NegativeAndBorrow)
     EXPECT_EQ(0, cpu.StatusReg.GetOverflow()); // No overflow
     AssertPCLocation(cpu, 3);
 }
+
+TEST_F(Cpu6502Test, INC_ZeroPage)
+{
+    SetupMemory(Memory6502::kRomStart, { 0xE6, 0x60 });
+    SetupMemory(0x60, { 0x5A });
+    uint8_t expectedResult = 0x5A + 1;
+    
+    cpu.ExecuteInstruction();
+
+    int memoryValue = memory.ReadByte(0x60);
+    EXPECT_EQ(expectedResult, memoryValue);
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, INC_ZeroPageX)
+{
+    SetupMemory(Memory6502::kRomStart, { 0xF6, 0x30 });
+    SetupMemory(0x30 + 0x40, { 0x11 });
+    cpu.X = 0x40;
+    uint8_t expectedResult = 0x11 + 1;
+
+    cpu.ExecuteInstruction();
+
+    int memoryValue = memory.ReadByte(0x40 + 0x30);
+    EXPECT_EQ(expectedResult, memoryValue);
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, INC_Absolute)
+{
+    SetupMemory(Memory6502::kRomStart, { 0xEE, 0x34, 0x12 });
+    SetupMemory(0x1234, { 0x21 });
+    uint8_t expectedResult = 0x21 + 1;
+
+    cpu.ExecuteInstruction();
+
+    int memoryValue = memory.ReadWord(0x1234);
+    EXPECT_EQ(expectedResult, memoryValue);
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, INC_AbsoluteX)
+{
+    SetupMemory(Memory6502::kRomStart, { 0xFE, 0x34, 0x12 });
+    SetupMemory(0x1234 + 0x3, { 0x12 });
+    cpu.X = 0x3;
+    uint8_t expectedResult = 0x12 + 1;
+    
+    cpu.ExecuteInstruction();
+
+    int memoryValue = memory.ReadWord(0x1234 + 0x3);
+    EXPECT_EQ(expectedResult, memoryValue);
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    AssertPCLocation(cpu, 3);
+}

@@ -579,6 +579,21 @@ private:
      */
     void SBCIndirectY();
 
+    /// @brief Performs INC instruction using value at that address.
+    void INC(uint16_t addres);
+
+    /// @brief Performs INC instruction using zero page addressing mode.
+    void INCZeroPage();
+
+    /// @brief Performs INC instruction using zero page x addressing mode.
+    void INCZeroPageX();
+
+    /// @brief Performs INC instruction using absolute addressing mode.
+    void INCAbsolute();
+
+    /// @brief Performs INC instruction using absolute x addressing mode.
+    void INCAbsoluteX();
+
     /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.
