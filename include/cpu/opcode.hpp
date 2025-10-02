@@ -480,4 +480,52 @@ enum class Opcode: uint8_t
 
     /// @brief Opcode for ROR Absolute X instruction.
     ROR_ABSOLUTEX = 0x7E,
+
+    /// @brief Opcode for AND Immediate instruction
+    AND_IMMEDIATE = 0x29,
+
+    /// @brief Opcode for AND Zero Page instruction
+    AND_ZEROPAGE = 0x25,
+
+    /// @brief Opcode for AND Zero Page X instruction
+    AND_ZEROPAGEX = 0x35,
+
+    /// @brief Opcode for AND Absolute instruction
+    AND_ABSOLUTE = 0x2D,
+
+    /// @brief Opcode for AND Absolute X instruction
+    AND_ABSOLUTEX = 0x3D,
+
+    /// @brief Opcode for AND Absolute Y instruction
+    AND_ABSOLUTEY = 0x39,
+
+    /// @brief Opcode for AND Indirect X instruction
+    AND_INDIRECTX = 0x21,
+
+    /// @brief Opcode for AND Indirect Y instruction
+    AND_INDIRECTY = 0x31,
+
+    /// @brief Opcode for ORA Immediate instruction.
+    ORA_IMMEDIATE = 0x09,
+
+    /// @brief Opcode for ORA Zero Page instruction.
+    ORA_ZEROPAGE = 0x05,
+
+    /// @brief Opcode for ORA Zero Page X instruction.
+    ORA_ZEROPAGEX = 0x15,
+
+    /// @brief Opcode for ORA Absolute instruction.
+    ORA_ABSOLUTE = 0x0D,
+
+    /// @brief Opcode for ORA Absolute X instruction.
+    ORA_ABSOLUTEX = 0x1D,
+
+    /// @brief Opcode for ORA Absolute Y instruction.
+    ORA_ABSOLUTEY = 0x19,
+
+    /// @brief Opcode for ORA Indirect X instruction.
+    ORA_INDIRECTX = 0x01,
+
+    /// @brief Opcode for ORA Indirect Y instruction.
+    ORA_INDIRECTY = 0x11,
 };

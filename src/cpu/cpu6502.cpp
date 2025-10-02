@@ -129,6 +129,26 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::ROR_ZEROPAGEX)]    = &Cpu6502::RORZeroPageX;
     opcodeTable[static_cast<uint8_t>(Opcode::ROR_ABSOLUTE)]     = &Cpu6502::RORAbsolute;
     opcodeTable[static_cast<uint8_t>(Opcode::ROR_ABSOLUTEX)]    = &Cpu6502::RORAbsoluteX;
+
+    // AND
+    opcodeTable[static_cast<uint8_t>(Opcode::AND_IMMEDIATE)]    = &Cpu6502::ANDImmediate;
+    opcodeTable[static_cast<uint8_t>(Opcode::AND_ZEROPAGE)]     = &Cpu6502::ANDZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::AND_ZEROPAGEX)]    = &Cpu6502::ANDZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::AND_ABSOLUTE)]     = &Cpu6502::ANDAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::AND_ABSOLUTEX)]    = &Cpu6502::ANDAbsoluteX;
+    opcodeTable[static_cast<uint8_t>(Opcode::AND_ABSOLUTEY)]    = &Cpu6502::ANDAbsoluteY;
+    opcodeTable[static_cast<uint8_t>(Opcode::AND_INDIRECTX)]    = &Cpu6502::ANDIndirectX;
+    opcodeTable[static_cast<uint8_t>(Opcode::AND_INDIRECTY)]    = &Cpu6502::ANDIndirectY;
+
+    // ORA
+    opcodeTable[static_cast<uint8_t>(Opcode::ORA_IMMEDIATE)]    = &Cpu6502::ORAImmediate;
+    opcodeTable[static_cast<uint8_t>(Opcode::ORA_ZEROPAGE)]     = &Cpu6502::ORAZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::ORA_ZEROPAGEX)]    = &Cpu6502::ORAZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::ORA_ABSOLUTE)]     = &Cpu6502::ORAAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::ORA_ABSOLUTEX)]    = &Cpu6502::ORAAbsoluteX;
+    opcodeTable[static_cast<uint8_t>(Opcode::ORA_ABSOLUTEY)]    = &Cpu6502::ORAAbsoluteY;
+    opcodeTable[static_cast<uint8_t>(Opcode::ORA_INDIRECTX)]    = &Cpu6502::ORAIndirectX;
+    opcodeTable[static_cast<uint8_t>(Opcode::ORA_INDIRECTY)]    = &Cpu6502::ORAIndirectY;
 }
 
 void Cpu6502::Reset()
@@ -793,6 +813,99 @@ void Cpu6502::RORAbsolute()
 void Cpu6502::RORAbsoluteX()
 {
     ROR(AddressingAbsoluteX());
+}
+
+void Cpu6502::AND(uint16_t address)
+{
+    uint8_t memoryValue = memory.ReadByte(address);
+    A = A & memoryValue;
+    SetNZFlags(A);
+}
+
+void Cpu6502::ANDImmediate()
+{
+    AND(AddressingImmediate());
+}
+
+void Cpu6502::ANDZeroPage()
+{
+    AND(AddressingZeroPage());
+}
+
+void Cpu6502::ANDZeroPageX()
+{
+    AND(AddressingZeroPageX());
+}
+
+void Cpu6502::ANDAbsolute()
+{
+    AND(AddressingAbsolute());
+}
+
+void Cpu6502::ANDAbsoluteX()
+{
+    AND(AddressingAbsoluteX());
+}
+
+void Cpu6502::ANDAbsoluteY()
+{
+    AND(AddressingAbsoluteY());
+}
+
+void Cpu6502::ANDIndirectX()
+{
+    AND(AddressingIndirectX());
+}
+
+void Cpu6502::ANDIndirectY()
+{
+    AND(AddressingIndirectY());
+}
+
+void Cpu6502::ORA(uint16_t address)
+{
+    A = A | memory.ReadByte(address);
+    SetNZFlags(A);
+}
+
+void Cpu6502::ORAImmediate()
+{
+    ORA(AddressingImmediate());
+}
+
+void Cpu6502::ORAZeroPage()
+{
+    ORA(AddressingZeroPage());
+}
+
+void Cpu6502::ORAZeroPageX()
+{
+    ORA(AddressingZeroPageX());
+}
+
+void Cpu6502::ORAAbsolute()
+{
+    ORA(AddressingAbsolute());
+}
+
+void Cpu6502::ORAAbsoluteX()
+{
+    ORA(AddressingAbsoluteX());
+}
+
+void Cpu6502::ORAAbsoluteY()
+{
+    ORA(AddressingAbsoluteY());
+}
+
+void Cpu6502::ORAIndirectX()
+{
+    ORA(AddressingIndirectX());
+}
+
+void Cpu6502::ORAIndirectY()
+{
+    ORA(AddressingIndirectY());
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)

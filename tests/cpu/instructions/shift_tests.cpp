@@ -20,7 +20,8 @@ TEST_F(Cpu6502Test, ASL_AccumulatorNegativeCarry)
 {
     SetupMemory(Memory6502::kRomStart, { 0x0A });
     cpu.A = 0xFF;
-    uint8_t expectedResult = 0xFF << 1;
+    uint8_t expectedResult = 0xFF;
+    expectedResult <<= 1;
 
     cpu.ExecuteInstruction();
 
@@ -50,7 +51,8 @@ TEST_F(Cpu6502Test, ASL_ZeroPageNegativeCarry)
 {
     SetupMemory(Memory6502::kRomStart, { 0x06, 0x20 });
     SetupMemory(0x20, { 0xFF });
-    uint8_t expectedResult = 0xFF << 1;
+    uint8_t expectedResult = 0xFF;
+    expectedResult <<= 1;
 
     cpu.ExecuteInstruction();
 

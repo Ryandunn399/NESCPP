@@ -37,7 +37,7 @@ FetchContent_MakeAvailable(googletest)
 
 # Separate your main executable and tests
 file(GLOB_RECURSE SOURCES "src/*.cpp")
-file(GLOB_RECURSE TESTS "tests/*.cpp")
+file(GLOB_RECURSE TESTS CONFIGURE_DEPENDS "tests/*.cpp")
 
 message(STATUS "Tests files found:")
 foreach(testfile ${TESTS})

@@ -693,6 +693,60 @@ private:
     /// @brief Performs ROR using absolute x addressing mode.
     void RORAbsoluteX();
 
+    /// @brief Performs AND instruction using value at that address.
+    void AND(uint16_t address);
+
+    /// @brief Performs AND using immediate addressing mode.
+    void ANDImmediate();
+
+    /// @brief Performs AND using zero page addressing mode.
+    void ANDZeroPage();
+
+    /// @brief Performs AND using zero page x addressing mode.
+    void ANDZeroPageX();
+
+    /// @brief Performs AND using absolute addressing mode.
+    void ANDAbsolute();
+
+    /// @brief Performs AND using absolute x addressing mode.
+    void ANDAbsoluteX();
+
+    /// @brief Performs AND using absolute y addressing mode.
+    void ANDAbsoluteY();
+
+    /// @brief Performs AND using indirect x addressing mode.
+    void ANDIndirectX();
+
+    /// @brief Performs AND using indirect y addressing mode.
+    void ANDIndirectY();
+
+    /// @brief Performs ORA instruction using value at that address.
+    void ORA(uint16_t address);
+
+    /// @brief Performs ORA using immediate addressing mode.
+    void ORAImmediate();
+
+    /// @brief Performs ORA using zero page addressing mode.
+    void ORAZeroPage();
+
+    /// @brief Performs ORA using zero page x addressing mode.
+    void ORAZeroPageX();
+
+    /// @brief Performs ORA using absolute addressing mode.
+    void ORAAbsolute();
+
+    /// @brief Performs ORA using absolute x addressing mode.
+    void ORAAbsoluteX();
+
+    /// @brief Performs ORA using absolute y addressing mode.
+    void ORAAbsoluteY();
+
+    /// @brief Performs ORA using indirect x addressing mode.
+    void ORAIndirectX();
+
+    /// @brief Performs ORA using indirect y addressing mode.
+    void ORAIndirectY();
+
     /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.
