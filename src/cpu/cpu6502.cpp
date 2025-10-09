@@ -149,6 +149,16 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::ORA_ABSOLUTEY)]    = &Cpu6502::ORAAbsoluteY;
     opcodeTable[static_cast<uint8_t>(Opcode::ORA_INDIRECTX)]    = &Cpu6502::ORAIndirectX;
     opcodeTable[static_cast<uint8_t>(Opcode::ORA_INDIRECTY)]    = &Cpu6502::ORAIndirectY;
+
+    // EOR
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_IMMEDIATE)]    = &Cpu6502::EORImmediate();
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ZEROPAGE)]    = &Cpu6502::EORImmediate();
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ZEROPAGEX)]    = &Cpu6502::EORImmediate();
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTE)]    = &Cpu6502::EORImmediate();
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTEX)]    = &Cpu6502::EORImmediate();
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTEY)]    = &Cpu6502::EORImmediate();
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_INDIRECTX)]    = &Cpu6502::EORImmediate();
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_INDIRECTY)]    = &Cpu6502::EORImmediate();
 }
 
 void Cpu6502::Reset()
