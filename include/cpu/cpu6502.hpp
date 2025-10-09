@@ -77,7 +77,10 @@ public:
      * @brief Executes the next instruction in memory.
      * 
      */
-    void ExecuteInstruction();
+    uint8_t ExecuteInstruction();
+
+    /// @brief Retrieves total number of cycles 
+    uint64_t GetTotalCycles() const { return totalCycles; }
 
     /**
      * @brief Resets the CPU information.
@@ -112,11 +115,23 @@ private:
      */
     uint8_t stackPointer;
 
+    /// @brief Total cycles since power-on/reset.
+    uint64_t totalCycles;
+
+    /// @brief Cycles for current instruction.
+    uint8_t currentInstructionCycles;
+
+    /// @brief Cycle lookup table for base instruction timing.
+    uint8_t cycleTable[256];
+
     /**
      * @brief Will initialize the opcode table by pointing to the 
      * 
      */
     void initOpcodeTable();
+
+    /// @brief Will initialize the instruction cycle table.
+    void initInstructionCycleTable();
 
     /**
      * @brief Immediate addressing mode.
@@ -191,7 +206,7 @@ private:
      *
      * @return uint16_t Effective 16-bit address in memory.
      */
-    uint16_t AddressingAbsoluteX();
+    uint16_t AddressingAbsoluteX(bool handlePageCross);
 
     /**
      * @brief Absolute,Y addressing mode.
@@ -204,7 +219,7 @@ private:
      *
      * @return uint16_t Effective 16-bit address in memory.
      */
-    uint16_t AddressingAbsoluteY();
+    uint16_t AddressingAbsoluteY(bool handlePageCross);
 
     /**
      * @brief Indexed Indirect (Indirect,X) addressing mode.
@@ -218,7 +233,7 @@ private:
      *
      * @return uint16_t Effective 16-bit address in memory.
      */
-    uint16_t AddressingIndirectX();
+    uint16_t AddressingIndirectX(bool handlePageCross);
 
     /**
      * @brief Indirect Indexed (Indirect),Y addressing mode.
@@ -231,7 +246,7 @@ private:
      *
      * @return uint16_t Effective 16-bit address in memory.
      */
-    uint16_t AddressingIndirectY();
+    uint16_t AddressingIndirectY(bool handlePageCross);
     
     /**
      * @brief Loads memory address value into the accumulator register.
@@ -833,6 +848,30 @@ private:
 
     /// @brief Performs CPY using absolute addressing mode.
     void CPYAbsolute();
+
+    /// @brief Performs the relative BCC instruction.
+    void BCC();
+
+    /// @brief Performs the relative BCS instruction.
+    void BCS();
+
+    /// @brief Performs the relative BEQ instruction.
+    void BEQ();
+
+    /// @brief Performs the relative BNE instruction.
+    void BNE();
+
+    /// @brief Performs the relative BPL instruction.
+    void BPL();
+
+    /// @brief Performs the relative BMI instruction.
+    void BMI();
+
+    /// @brief Performs the relative BVC instruction.
+    void BVC();
+
+    /// @brief Performs the relative BVS instruction.
+    void BVS();
 
     /**
      * @brief Helper method that will evaluate a value and set the zero

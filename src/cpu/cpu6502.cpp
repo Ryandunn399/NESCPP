@@ -5,12 +5,13 @@
 Cpu6502::Cpu6502(Memory6502& mem) : memory(mem)
 {
     initOpcodeTable();
+    initInstructionCycleTable();
 }
 
 void Cpu6502::initOpcodeTable()
 {
     // LDA
-    opcodeTable[static_cast<uint8_t>(Opcode::LDA_IMM)]          = &Cpu6502::LDAImmediate;
+    opcodeTable[static_cast<uint8_t>(Opcode::LDA_IMMEDIATE)]    = &Cpu6502::LDAImmediate;
     opcodeTable[static_cast<uint8_t>(Opcode::LDA_ZEROPAGE)]     = &Cpu6502::LDAZeroPage;
     opcodeTable[static_cast<uint8_t>(Opcode::LDA_ZEROPAGEX)]    = &Cpu6502::LDAZeroPageX;
     opcodeTable[static_cast<uint8_t>(Opcode::LDA_ABSOLUTE)]     = &Cpu6502::LDAAbsolute;
@@ -179,9 +180,204 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::CPX_ZEROPAGE)]     = &Cpu6502::CPXZeroPage;
     opcodeTable[static_cast<uint8_t>(Opcode::CPX_ABSOLUTE)]     = &Cpu6502::CPXAbsolute;
 
+    // CPY
     opcodeTable[static_cast<uint8_t>(Opcode::CPY_IMMEDIATE)]    = &Cpu6502::CPYImmediate;
     opcodeTable[static_cast<uint8_t>(Opcode::CPY_ZEROPAGE)]     = &Cpu6502::CPYZeroPage;
     opcodeTable[static_cast<uint8_t>(Opcode::CPY_ABSOLUTE)]     = &Cpu6502::CPYAbsolute;
+
+    // BRANCH
+    opcodeTable[static_cast<uint8_t>(Opcode::BCC_RELATIVE)]     = &Cpu6502::BCC;
+    opcodeTable[static_cast<uint8_t>(Opcode::BCS_RELATIVE)]     = &Cpu6502::BCS;
+    opcodeTable[static_cast<uint8_t>(Opcode::BEQ_RELATIVE)]     = &Cpu6502::BEQ;
+    opcodeTable[static_cast<uint8_t>(Opcode::BNE_RELATIVE)]     = &Cpu6502::BNE;
+    opcodeTable[static_cast<uint8_t>(Opcode::BPL_RELATIVE)]     = &Cpu6502::BPL;
+    opcodeTable[static_cast<uint8_t>(Opcode::BMI_RELATIVE)]     = &Cpu6502::BMI;
+    opcodeTable[static_cast<uint8_t>(Opcode::BVC_RELATIVE)]     = &Cpu6502::BVC;
+    opcodeTable[static_cast<uint8_t>(Opcode::BVS_RELATIVE)]     = &Cpu6502::BVS;
+}
+
+void Cpu6502::initInstructionCycleTable()
+{
+    std::fill(std::begin(cycleTable), std::end(cycleTable), 0);
+
+    // LDA
+    cycleTable[static_cast<uint8_t>(Opcode::LDA_IMMEDIATE)]     = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::LDA_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::LDA_ZEROPAGEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::LDA_ABSOLUTE)]      = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::LDA_ABSOLUTEX)]     = 4; // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::LDA_ABSOLUTEY)]     = 4; // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::LDA_INDIRECTX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::LDA_INDIRECTY)]     = 5; // +1 if page cross
+
+    // LDX
+    cycleTable[static_cast<uint8_t>(Opcode::LDX_IMMEDIATE)]     = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::LDX_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::LDX_ZEROPAGEY)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::LDX_ABSOLUTE)]      = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::LDX_ABSOLUTEY)]     = 4;  // +1 if page cross
+
+    // LDY
+    cycleTable[static_cast<uint8_t>(Opcode::LDY_IMMEDIATE)]     = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::LDY_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::LDY_ZEROPAGEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::LDY_ABSOLUTE)]      = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::LDY_ABSOLUTEX)]     = 4;  // +1 if page cross
+
+    // STA
+    cycleTable[static_cast<uint8_t>(Opcode::STA_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::STA_ZEROPAGEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::STA_ABSOLUTE)]      = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::STA_ABSOLUTEX)]     = 5;
+    cycleTable[static_cast<uint8_t>(Opcode::STA_ABSOLUTEY)]     = 5;
+    cycleTable[static_cast<uint8_t>(Opcode::STA_INDIRECTX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::STA_INDIRECTY)]     = 6;
+
+    // STX
+    cycleTable[static_cast<uint8_t>(Opcode::STX_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::STX_ZEROPAGEY)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::STX_ABSOLUTE)]      = 4;
+
+    // STY
+    cycleTable[static_cast<uint8_t>(Opcode::STY_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::STY_ZEROPAGEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::STY_ABSOLUTE)]      = 4;
+
+    // Transfer (all 2 cycles)
+    cycleTable[static_cast<uint8_t>(Opcode::TAX_IMPLIED)]       = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::TXA_IMPLIED)]       = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::TAY_IMPLIED)]       = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::TYA_IMPLIED)]       = 2;
+
+    // ADC
+    cycleTable[static_cast<uint8_t>(Opcode::ADC_IMMEDIATE)]     = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::ADC_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::ADC_ZEROPAGEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::ADC_ABSOLUTE)]      = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::ADC_ABSOLUTEX)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::ADC_ABSOLUTEY)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::ADC_INDIRECTX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::ADC_INDIRECTY)]     = 5;  // +1 if page cross
+
+    // SBC
+    cycleTable[static_cast<uint8_t>(Opcode::SBC_IMMEDIATE)]     = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::SBC_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::SBC_ZEROPAGEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::SBC_ABSOLUTE)]      = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::SBC_ABSOLUTEX)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::SBC_ABSOLUTEY)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::SBC_INDIRECTX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::SBC_INDIRECTY)]     = 5;  // +1 if page cross
+
+    // INC
+    cycleTable[static_cast<uint8_t>(Opcode::INC_ZEROPAGE)]      = 5;
+    cycleTable[static_cast<uint8_t>(Opcode::INC_ZEROPAGEX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::INC_ABSOLUTE)]      = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::INC_ABSOLUTEX)]     = 7;
+
+    // DEC
+    cycleTable[static_cast<uint8_t>(Opcode::DEC_ZEROPAGE)]      = 5;
+    cycleTable[static_cast<uint8_t>(Opcode::DEC_ZEROPAGEX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::DEC_ABSOLUTE)]      = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::DEC_ABSOLUTEX)]     = 7;
+
+    // INX, DEX, INY, DEY (all 2 cycles)
+    cycleTable[static_cast<uint8_t>(Opcode::INX)]               = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::DEX)]               = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::INY)]               = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::DEY)]               = 2;
+
+    // ASL
+    cycleTable[static_cast<uint8_t>(Opcode::ASL_ACCUMULATOR)]   = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::ASL_ZEROPAGE)]      = 5;
+    cycleTable[static_cast<uint8_t>(Opcode::ASL_ZEROPAGEX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::ASL_ABSOLUTE)]      = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::ASL_ABSOLUTEX)]     = 7;
+
+    // LSR
+    cycleTable[static_cast<uint8_t>(Opcode::LSR_ACCUMULATOR)]   = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::LSR_ZEROPAGE)]      = 5;
+    cycleTable[static_cast<uint8_t>(Opcode::LSR_ZEROPAGEX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::LSR_ABSOLUTE)]      = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::LSR_ABSOLUTEX)]     = 7;
+
+    // ROL
+    cycleTable[static_cast<uint8_t>(Opcode::ROL_ACCUMULATOR)]   = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::ROL_ZEROPAGE)]      = 5;
+    cycleTable[static_cast<uint8_t>(Opcode::ROL_ZEROPAGEX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::ROL_ABSOLUTE)]      = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::ROL_ABSOLUTEX)]     = 7;
+
+    // ROR
+    cycleTable[static_cast<uint8_t>(Opcode::ROR_ACCUMULATOR)]   = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::ROR_ZEROPAGE)]      = 5;
+    cycleTable[static_cast<uint8_t>(Opcode::ROR_ZEROPAGEX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::ROR_ABSOLUTE)]      = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::ROR_ABSOLUTEX)]     = 7;
+
+    // AND
+    cycleTable[static_cast<uint8_t>(Opcode::AND_IMMEDIATE)]     = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::AND_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::AND_ZEROPAGEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::AND_ABSOLUTE)]      = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::AND_ABSOLUTEX)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::AND_ABSOLUTEY)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::AND_INDIRECTX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::AND_INDIRECTY)]     = 5;  // +1 if page cross
+
+    // ORA
+    cycleTable[static_cast<uint8_t>(Opcode::ORA_IMMEDIATE)]     = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::ORA_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::ORA_ZEROPAGEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::ORA_ABSOLUTE)]      = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::ORA_ABSOLUTEX)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::ORA_ABSOLUTEY)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::ORA_INDIRECTX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::ORA_INDIRECTY)]     = 5;  // +1 if page cross
+
+    // EOR
+    cycleTable[static_cast<uint8_t>(Opcode::EOR_IMMEDIATE)]     = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::EOR_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::EOR_ZEROPAGEX)]      = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTE)]      = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTEX)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTEY)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::EOR_INDIRECTX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::EOR_INDIRECTY)]      = 5;  // +1 if page cross
+
+    // BIT
+    cycleTable[static_cast<uint8_t>(Opcode::BIT_ZEROPAGE)]       = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::BIT_ABSOLUTE)]      = 4;
+    
+    // CMP
+    cycleTable[static_cast<uint8_t>(Opcode::CMP_IMMEDIATE)]     = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::CMP_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::CMP_ZEROPAGEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::CMP_ABSOLUTE)]      = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::CMP_ABSOLUTEX)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::CMP_ABSOLUTEY)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::CMP_INDIRECTX)]     = 6;
+    cycleTable[static_cast<uint8_t>(Opcode::CMP_INDIRECTY)]     = 5;  // +1 if page cross
+
+    // CPX
+    cycleTable[static_cast<uint8_t>(Opcode::CPX_IMMEDIATE)]     = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::CPX_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::CPX_ABSOLUTE)]      = 4;
+
+    // CPY
+    cycleTable[static_cast<uint8_t>(Opcode::CPY_IMMEDIATE)]     = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::CPY_ZEROPAGE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::CPY_ABSOLUTE)]      = 4;
+
+    // Branch instructions (all base 2 cycles, +1 if taken, +1 if page cross)
+    cycleTable[static_cast<uint8_t>(Opcode::BCC_RELATIVE)]      = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::BCS_RELATIVE)]      = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::BEQ_RELATIVE)]      = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::BNE_RELATIVE)]      = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::BPL_RELATIVE)]      = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::BMI_RELATIVE)]      = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::BVC_RELATIVE)]      = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::BVS_RELATIVE)]      = 2;
 }
 
 void Cpu6502::Reset()
@@ -192,9 +388,11 @@ void Cpu6502::Reset()
     X = 0;
     Y = 0;
     SP = 0xFF;
+    totalCycles = 0;
+    currentInstructionCycles = 0;
 }
 
-void Cpu6502::ExecuteInstruction()
+uint8_t Cpu6502::ExecuteInstruction()
 {
     uint8_t opcode = memory.ReadByte(PC);
     PC++;
@@ -203,7 +401,12 @@ void Cpu6502::ExecuteInstruction()
     if (handler == nullptr)
         throw std::runtime_error(Utils::to_hex(opcode) + " is an unknown opcode.");
 
+    currentInstructionCycles = cycleTable[opcode];
+
     (this->*handler)();
+
+    totalCycles = currentInstructionCycles;
+    return currentInstructionCycles;
 }
 
 uint16_t Cpu6502::AddressingImmediate()
@@ -242,39 +445,52 @@ uint16_t Cpu6502::AddressingAbsolute()
     return address;
 }
 
-uint16_t Cpu6502::AddressingAbsoluteX()
+uint16_t Cpu6502::AddressingAbsoluteX(bool handlePageCross = true)
 {
     uint16_t baseAddress = memory.ReadWord(PC);
     PC += 2;
     uint16_t effectiveAddress = baseAddress + X;
-    HandlePageCross(baseAddress, effectiveAddress);
+
+    if (handlePageCross)
+        HandlePageCross(baseAddress, effectiveAddress);
+
     return effectiveAddress;
 }
 
-uint16_t Cpu6502::AddressingAbsoluteY()
+uint16_t Cpu6502::AddressingAbsoluteY(bool handlePageCross = true)
 {
     uint16_t baseAddress = memory.ReadWord(PC);
     PC += 2;
     uint16_t effectiveAddress = baseAddress + Y;
-    HandlePageCross(baseAddress, effectiveAddress);
+
+    if (handlePageCross)
+        HandlePageCross(baseAddress, effectiveAddress);
+
     return effectiveAddress;
 }
 
-uint16_t Cpu6502::AddressingIndirectX()
+uint16_t Cpu6502::AddressingIndirectX(bool handlePageCross = true)
 {
     uint8_t baseAddress = memory.ReadByte(PC);
     PC++;
     uint8_t effectiveAddress = (baseAddress + X) & 0xFF;
+
+    if (handlePageCross)
+        HandlePageCross(baseAddress, effectiveAddress);
+
     return memory.ReadWord(effectiveAddress);
 }
 
-uint16_t Cpu6502::AddressingIndirectY()
+uint16_t Cpu6502::AddressingIndirectY(bool handlePageCross = true)
 {
     uint8_t indirectAddress = memory.ReadByte(PC);
     PC++;
     uint16_t baseAddress = memory.ReadWord(indirectAddress);
     uint16_t effectiveAddress = baseAddress + Y;
-    HandlePageCross(baseAddress, effectiveAddress);
+
+    if (handlePageCross)
+        HandlePageCross(baseAddress, effectiveAddress);
+    
     return effectiveAddress;
 }
 
@@ -409,22 +625,22 @@ void Cpu6502::STAAbsolute()
 
 void Cpu6502::STAAbsoluteX()
 {
-    STA(AddressingAbsoluteX());
+    STA(AddressingAbsoluteX(false));
 }
 
 void Cpu6502::STAAbsoluteY()
 {
-    STA(AddressingAbsoluteY());
+    STA(AddressingAbsoluteY(false));
 }
 
 void Cpu6502::STAIndirectX()
 {
-    STA(AddressingIndirectX());
+    STA(AddressingIndirectX(false));
 }
 
 void Cpu6502::STAIndirectY()
 {
-    STA(AddressingIndirectY());
+    STA(AddressingIndirectY(false));
 }
 
 void Cpu6502::STX(uint16_t address)
@@ -625,7 +841,7 @@ void Cpu6502::INCAbsolute()
 
 void Cpu6502::INCAbsoluteX()
 {
-    INC(AddressingAbsoluteX());
+    INC(AddressingAbsoluteX(false));
 }
 
 void Cpu6502::DEC(uint16_t address)
@@ -652,7 +868,7 @@ void Cpu6502::DECAbsolute()
 
 void Cpu6502::DECAbsoluteX()
 {
-    DEC(AddressingAbsoluteX());
+    DEC(AddressingAbsoluteX(false));
 }
 
 void Cpu6502::INX()
@@ -719,7 +935,7 @@ void Cpu6502::ASLAbsolute()
 
 void Cpu6502::ASLAbsoluteX()
 {
-    ASL(AddressingAbsoluteX());
+    ASL(AddressingAbsoluteX(false));
 }
 
 void Cpu6502::LSR(uint16_t address)
@@ -761,7 +977,7 @@ void Cpu6502::LSRAbsolute()
 
 void Cpu6502::LSRAbsoluteX()
 {
-    LSR(AddressingAbsoluteX());
+    LSR(AddressingAbsoluteX(false));
 }
 
 void Cpu6502::ROL(uint16_t address)
@@ -803,7 +1019,7 @@ void Cpu6502::ROLAbsolute()
 
 void Cpu6502::ROLAbsoluteX()
 {
-    ROL(AddressingAbsoluteX());
+    ROL(AddressingAbsoluteX(false));
 }
 
 void Cpu6502::ROR(uint16_t address)
@@ -845,7 +1061,7 @@ void Cpu6502::RORAbsolute()
 
 void Cpu6502::RORAbsoluteX()
 {
-    ROR(AddressingAbsoluteX());
+    ROR(AddressingAbsoluteX(false));
 }
 
 void Cpu6502::AND(uint16_t address)
@@ -1103,16 +1319,67 @@ void Cpu6502::CPYAbsolute()
     CPY(AddressingAbsolute());
 }
 
-void Cpu6502::SetNZFlags(uint8_t value)
+void Cpu6502::BCC()
 {
-    StatusReg.SetZero(value == 0);
-    StatusReg.SetNegative((value & 0x80) != 0);
+    // Grab branch location and increment PC
+    uint8_t branchOffset = memory.ReadByte(PC);
+    PC++;
+
+    if (StatusReg.GetCarry())
+        return;
+
+    uint16_t oldPc = PC;
+    PC += branchOffset;
+
+    if ((oldPc & 0xFF00) != (PC & 0xFF00))
+    {
+        // increment cycles
+    }
+}
+
+void Cpu6502::BCS()
+{
+    
+}
+
+void Cpu6502::BEQ()
+{
+    
+}
+
+void Cpu6502::BNE()
+{
+    
+}
+
+void Cpu6502::BPL()
+{
+    
+}
+
+void Cpu6502::BMI()
+{
+    
+}
+
+void Cpu6502::BVC()
+{
+    
+}
+
+void Cpu6502::BVS()
+{
+    
 }
 
 void Cpu6502::HandlePageCross(uint16_t baseAddress, uint16_t effectiveAddress)
 {
     if ((baseAddress & 0xFF00) != (effectiveAddress & 0xFF00))
-    {
-        // TODO update cycles.
-    }
+        currentInstructionCycles++;
+}
+
+void Cpu6502::SetNZFlags(uint8_t value)
+{
+    StatusReg.SetZero(value == 0);
+    StatusReg.SetNegative((value & 0x80) != 0);
 }

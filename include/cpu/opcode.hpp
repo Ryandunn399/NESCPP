@@ -14,7 +14,7 @@ enum class Opcode: uint8_t
      * Loads the accumulator with a constant value provided immediately after the opcode.
      * PC is advanced by 2 bytes.
      */
-    LDA_IMM = 0xA9,
+    LDA_IMMEDIATE = 0xA9,
 
     /**
      * @brief Load Accumulator from Zero Page Address
@@ -600,4 +600,28 @@ enum class Opcode: uint8_t
 
     /// @brief Opcode for CPY Absolute instruction.
     CPY_ABSOLUTE = 0xCC,
+
+    /// @brief Opcode for BCC Relative instruction.
+    BCC_RELATIVE = 0x90,
+
+    /// @brief Opcode for BCS Relative instruction.
+    BCS_RELATIVE = 0xB0,
+
+    /// @brief Opcode for BEQ Relative instruction.
+    BEQ_RELATIVE = 0xF0,
+
+    /// @brief Opcode for BNE Relative instruction.
+    BNE_RELATIVE = 0xD0,
+
+    /// @brief Opcode for BPL Relative instruction.
+    BPL_RELATIVE = 0x10,
+
+    /// @brief Opcode for BMI Relative instruction.
+    BMI_RELATIVE = 0x30,
+
+    /// @brief Opcode for BNE Relative instruction.
+    BVC_RELATIVE = 0x50,
+
+    /// @brief Opcode for BPL Relative instruction.
+    BVS_RELATIVE = 0x70,
 };
