@@ -747,6 +747,42 @@ private:
     /// @brief Performs ORA using indirect y addressing mode.
     void ORAIndirectY();
 
+    /// @brief Performs EOR instruction using value at the address.
+    void EOR(uint16_t address);
+    
+    /// @brief Performs EOR using immediate addressing mode.
+    void EORImmediate();
+
+    /// @brief Performs EOR using zero page addressing mode.
+    void EORZeroPage();
+
+    /// @brief Performs EOR using zero page x addressing mode.
+    void EORZeroPageX();
+
+    /// @brief Performs EOR using absolute addressing mode.
+    void EORAbsolute();
+
+    /// @brief Performs EOR using absolute x addressing mode.
+    void EORAbsoluteX();
+
+    /// @brief Performs EOR using absolute y addressing mode.
+    void EORAbsoluteY();
+
+    /// @brief Performs EOR using indirect x addressing mode.
+    void EORIndirectX();
+
+    /// @brief Performs EOR using indirect y addressing mode.
+    void EORIndirectY();
+
+    /// @brief Performs BIT using value at address.
+    void BIT(uint16_t address);
+
+    /// @brief Performs BIT using zero page addressing mode.
+    void BITZeroPage();
+
+    /// @brief Performs BIT using absolute addressing mode.
+    void BITAbsolute();
+
     /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.

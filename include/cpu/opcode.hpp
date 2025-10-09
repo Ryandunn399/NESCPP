@@ -528,4 +528,34 @@ enum class Opcode: uint8_t
 
     /// @brief Opcode for ORA Indirect Y instruction.
     ORA_INDIRECTY = 0x11,
+
+    /// @brief Opcode for EOR Immediate instruction.
+    EOR_IMMEDIATE = 0x49,
+
+    /// @brief Opcode for EOR Zero Page instruction.
+    EOR_ZEROPAGE = 0x45,
+
+    /// @brief Opcode for EOR Zero Page X instruction.
+    EOR_ZEROPAGEX = 0x55,
+
+    /// @brief Opcode for EOR Absolute instruction.
+    EOR_ABSOLUTE = 0x4D,
+
+    /// @brief Opcode for EOR Absolute X instruction.
+    EOR_ABSOLUTEX = 0x5D,
+
+    /// @brief Opcode for EOR Absolute Y instruction.
+    EOR_ABSOLUTEY = 0x59,
+
+    /// @brief Opcode for EOR Indirect X instruction.
+    EOR_INDIRECTX = 0x41,
+
+    /// @brief Opcode for EOR Indirect Y instruction.
+    EOR_INDIRECTY = 0x51,
+
+    /// @brief Opcode for BIT Zero Page instruction.
+    BIT_ZEROPAGE = 0x24,
+
+    /// @brief Opcode for BIT Absolute instruction.
+    BIT_ABSOLUTE = 0x2C,
 };
