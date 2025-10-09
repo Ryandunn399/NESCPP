@@ -151,14 +151,18 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::ORA_INDIRECTY)]    = &Cpu6502::ORAIndirectY;
 
     // EOR
-    opcodeTable[static_cast<uint8_t>(Opcode::EOR_IMMEDIATE)]    = &Cpu6502::EORImmediate();
-    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ZEROPAGE)]    = &Cpu6502::EORImmediate();
-    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ZEROPAGEX)]    = &Cpu6502::EORImmediate();
-    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTE)]    = &Cpu6502::EORImmediate();
-    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTEX)]    = &Cpu6502::EORImmediate();
-    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTEY)]    = &Cpu6502::EORImmediate();
-    opcodeTable[static_cast<uint8_t>(Opcode::EOR_INDIRECTX)]    = &Cpu6502::EORImmediate();
-    opcodeTable[static_cast<uint8_t>(Opcode::EOR_INDIRECTY)]    = &Cpu6502::EORImmediate();
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_IMMEDIATE)]    = &Cpu6502::EORImmediate;
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ZEROPAGE)]     = &Cpu6502::EORZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ZEROPAGEX)]    = &Cpu6502::EORZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTE)]     = &Cpu6502::EORAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTEX)]    = &Cpu6502::EORAbsoluteX;
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTEY)]    = &Cpu6502::EORAbsoluteY;
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_INDIRECTX)]    = &Cpu6502::EORIndirectX;
+    opcodeTable[static_cast<uint8_t>(Opcode::EOR_INDIRECTY)]    = &Cpu6502::EORIndirectY;
+
+    // BIT
+    opcodeTable[static_cast<uint8_t>(Opcode::BIT_ZEROPAGE)]     = &Cpu6502::BITZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::BIT_ABSOLUTE)]     = &Cpu6502::BITAbsolute;
 }
 
 void Cpu6502::Reset()
@@ -916,6 +920,71 @@ void Cpu6502::ORAIndirectX()
 void Cpu6502::ORAIndirectY()
 {
     ORA(AddressingIndirectY());
+}
+
+void Cpu6502::EOR(uint16_t address)
+{
+    A = A ^ memory.ReadByte(address);
+    SetNZFlags(A);
+}
+
+void Cpu6502::EORImmediate()
+{
+    EOR(AddressingImmediate());
+}
+
+void Cpu6502::EORZeroPage()
+{
+    EOR(AddressingZeroPage());
+}
+
+void Cpu6502::EORZeroPageX()
+{
+    EOR(AddressingZeroPageX());
+}
+
+void Cpu6502::EORAbsolute()
+{
+    EOR(AddressingAbsolute());
+}
+
+void Cpu6502::EORAbsoluteX()
+{
+    EOR(AddressingAbsoluteX());
+}
+
+void Cpu6502::EORAbsoluteY()
+{
+    EOR(AddressingAbsoluteY());
+}
+
+void Cpu6502::EORIndirectX()
+{
+    EOR(AddressingIndirectX());
+}
+
+void Cpu6502::EORIndirectY()
+{
+    EOR(AddressingIndirectY());
+}
+
+void Cpu6502::BIT(uint16_t address)
+{
+    uint8_t memoryValue = memory.ReadByte(address);
+    uint8_t zeroResult = A & memoryValue;
+    StatusReg.SetZero(zeroResult == 0);
+    StatusReg.SetOverflow((memoryValue & 0b01000000) >> 6);
+    StatusReg.SetNegative((memoryValue & 0b10000000) >> 7);
+}
+
+void Cpu6502::BITZeroPage()
+{
+    BIT(AddressingZeroPage());
+}
+
+void Cpu6502::BITAbsolute()
+{
+    BIT(AddressingAbsolute());
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)
