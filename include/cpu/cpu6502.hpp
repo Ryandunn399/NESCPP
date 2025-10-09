@@ -783,6 +783,57 @@ private:
     /// @brief Performs BIT using absolute addressing mode.
     void BITAbsolute();
 
+    /// @brief Performs CMP using value at address.
+    void CMP(uint16_t address);
+
+    /// @brief Performs CMP using immediate addressing mode.
+    void CMPImmediate();
+
+    /// @brief Performs CMP using zero page addressing mode.
+    void CMPZeroPage();
+
+    /// @brief Performs CMP using zero page x addressing mode.
+    void CMPZeroPageX();
+
+    /// @brief Performs CMP using absolute addressing mode.
+    void CMPAbsolute();
+    
+    /// @brief Performs CMP using absolute x addressing mode.
+    void CMPAbsoluteX();
+
+    /// @brief Performs CMP using absolute y addressing mode.
+    void CMPAbsoluteY();
+
+    /// @brief Performs CMP using indirect x addressing mode.
+    void CMPIndirectX();
+
+    /// @brief Performs CMP using indirect y addressing mode.
+    void CMPIndirectY();
+
+    /// @brief Performs CPX using value at address.
+    void CPX(uint16_t address);
+
+    /// @brief Performs CPX using immediate addressing mode.
+    void CPXImmediate();
+
+    /// @brief Performs CPX using zero page addressing mode.
+    void CPXZeroPage();
+
+    /// @brief Performs CPX using absolute addressing mode.
+    void CPXAbsolute();
+
+    /// @brief Performs CPY using value at address.
+    void CPY(uint16_t address);
+
+    /// @brief Performs CPY using immediate addressing mode.
+    void CPYImmediate();
+
+    /// @brief Performs CPY using zero page addressing mode.
+    void CPYZeroPage();
+
+    /// @brief Performs CPY using absolute addressing mode.
+    void CPYAbsolute();
+
     /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.

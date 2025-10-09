@@ -163,6 +163,25 @@ void Cpu6502::initOpcodeTable()
     // BIT
     opcodeTable[static_cast<uint8_t>(Opcode::BIT_ZEROPAGE)]     = &Cpu6502::BITZeroPage;
     opcodeTable[static_cast<uint8_t>(Opcode::BIT_ABSOLUTE)]     = &Cpu6502::BITAbsolute;
+    
+    // CMP
+    opcodeTable[static_cast<uint8_t>(Opcode::CMP_IMMEDIATE)]    = &Cpu6502::CMPImmediate;
+    opcodeTable[static_cast<uint8_t>(Opcode::CMP_ZEROPAGE)]     = &Cpu6502::CMPZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::CMP_ZEROPAGEX)]    = &Cpu6502::CMPZeroPageX;
+    opcodeTable[static_cast<uint8_t>(Opcode::CMP_ABSOLUTE)]     = &Cpu6502::CMPAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::CMP_ABSOLUTEX)]    = &Cpu6502::CMPAbsoluteX;
+    opcodeTable[static_cast<uint8_t>(Opcode::CMP_ABSOLUTEY)]    = &Cpu6502::CMPAbsoluteY;
+    opcodeTable[static_cast<uint8_t>(Opcode::CMP_INDIRECTX)]    = &Cpu6502::CMPIndirectX;
+    opcodeTable[static_cast<uint8_t>(Opcode::CMP_INDIRECTY)]    = &Cpu6502::CMPIndirectY;
+
+    // CPX
+    opcodeTable[static_cast<uint8_t>(Opcode::CPX_IMMEDIATE)]    = &Cpu6502::CPXImmediate;
+    opcodeTable[static_cast<uint8_t>(Opcode::CPX_ZEROPAGE)]     = &Cpu6502::CPXZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::CPX_ABSOLUTE)]     = &Cpu6502::CPXAbsolute;
+
+    opcodeTable[static_cast<uint8_t>(Opcode::CPY_IMMEDIATE)]    = &Cpu6502::CPYImmediate;
+    opcodeTable[static_cast<uint8_t>(Opcode::CPY_ZEROPAGE)]     = &Cpu6502::CPYZeroPage;
+    opcodeTable[static_cast<uint8_t>(Opcode::CPY_ABSOLUTE)]     = &Cpu6502::CPYAbsolute;
 }
 
 void Cpu6502::Reset()
@@ -985,6 +1004,103 @@ void Cpu6502::BITZeroPage()
 void Cpu6502::BITAbsolute()
 {
     BIT(AddressingAbsolute());
+}
+
+void Cpu6502::CMP(uint16_t address)
+{
+    uint8_t memValue = memory.ReadByte(address);
+    uint8_t cmpResult = A - memValue;
+    StatusReg.SetCarry(A >= memValue);
+    StatusReg.SetZero(A == memValue);
+    StatusReg.SetNegative((cmpResult & 0b10000000) >> 7);
+}
+
+void Cpu6502::CMPImmediate()
+{
+    CMP(AddressingImmediate());
+}
+
+void Cpu6502::CMPZeroPage()
+{
+    CMP(AddressingZeroPage());
+}
+
+void Cpu6502::CMPZeroPageX()
+{
+    CMP(AddressingZeroPageX());
+}
+
+void Cpu6502::CMPAbsolute()
+{
+    CMP(AddressingAbsolute());
+}
+
+void Cpu6502::CMPAbsoluteX()
+{
+    CMP(AddressingAbsoluteX());
+}
+
+void Cpu6502::CMPAbsoluteY()
+{
+    CMP(AddressingAbsoluteY());
+}
+
+void Cpu6502::CMPIndirectX()
+{
+    CMP(AddressingIndirectX());
+}
+
+void Cpu6502::CMPIndirectY()
+{
+    CMP(AddressingIndirectY());
+}
+
+void Cpu6502::CPX(uint16_t address)
+{
+    uint8_t memValue = memory.ReadByte(address);
+    uint8_t cmpResult = X - memValue;
+    StatusReg.SetCarry(X >= memValue);
+    StatusReg.SetZero(X == memValue);
+    StatusReg.SetNegative((cmpResult & 0b10000000) >> 7);
+}
+
+void Cpu6502::CPXImmediate()
+{
+    CPX(AddressingImmediate());
+}
+
+void Cpu6502::CPXZeroPage()
+{
+    CPX(AddressingZeroPage());
+}
+
+void Cpu6502::CPXAbsolute()
+{
+    CPX(AddressingAbsolute());
+}
+
+void Cpu6502::CPY(uint16_t address)
+{
+    uint8_t memValue = memory.ReadByte(address);
+    uint8_t cmpResult = Y - memValue;
+    StatusReg.SetCarry(Y >= memValue);
+    StatusReg.SetZero(Y == memValue);
+    StatusReg.SetNegative((cmpResult & 0b10000000) >> 7);
+}
+
+void Cpu6502::CPYImmediate()
+{
+    CPY(AddressingImmediate());
+}
+
+void Cpu6502::CPYZeroPage()
+{
+    CPY(AddressingZeroPage());
+}
+
+void Cpu6502::CPYAbsolute()
+{
+    CPY(AddressingAbsolute());
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)

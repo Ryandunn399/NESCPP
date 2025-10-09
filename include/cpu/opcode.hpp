@@ -558,4 +558,46 @@ enum class Opcode: uint8_t
 
     /// @brief Opcode for BIT Absolute instruction.
     BIT_ABSOLUTE = 0x2C,
+
+    /// @brief Opcode for CMP Immediate instruction.
+    CMP_IMMEDIATE = 0xC9,
+
+    /// @brief Opcode for CMP Zero Page instruction.
+    CMP_ZEROPAGE = 0xC5,
+
+    /// @brief Opcode for CMP Zero Page X instruction.
+    CMP_ZEROPAGEX = 0xD5,
+
+    /// @brief Opcode for CMP Absolute instruction.
+    CMP_ABSOLUTE = 0xCD,
+
+    /// @brief Opcode for CMP Absolute X instruction.
+    CMP_ABSOLUTEX = 0xDD,
+
+    /// @brief Opcode for CMP Absolute Y instruction.
+    CMP_ABSOLUTEY = 0xD9,
+
+    /// @brief Opcode for CMP Indirect X instruction.
+    CMP_INDIRECTX = 0xC1,
+
+    /// @brief Opcode for CMP Indirect Y instruction.
+    CMP_INDIRECTY = 0xD1,
+
+    /// @brief Opcode for CPX Immediate instruction.
+    CPX_IMMEDIATE = 0xE0,
+
+    /// @brief Opcode for CPX Zero Page instruction.
+    CPX_ZEROPAGE = 0xE4,
+
+    /// @brief Opcode for CPX Absolute instruction.
+    CPX_ABSOLUTE = 0xEC,
+
+    /// @brief Opcode for CPY Immediate instruction.
+    CPY_IMMEDIATE = 0xC0,
+
+    /// @brief Opcode for CPY Zero Page instruction.
+    CPY_ZEROPAGE = 0xC4,
+
+    /// @brief Opcode for CPY Absolute instruction.
+    CPY_ABSOLUTE = 0xCC,
 };
