@@ -1321,19 +1321,19 @@ void Cpu6502::CPYAbsolute()
 void Cpu6502::BCC()
 {
     // Grab branch location and increment PC
-    uint8_t branchOffset = memory.ReadByte(PC);
+    int8_t branchOffset = static_cast<int8_t>(memory.ReadByte(PC));
     PC++;
 
-    if (StatusReg.GetCarry())
+    if (StatusReg.GetCarry() != 0)
         return;
+
+    // Branch taken, increment # of cycles
+    currentInstructionCycles += 1;
 
     uint16_t oldPc = PC;
     PC += branchOffset;
 
-    if ((oldPc & 0xFF00) != (PC & 0xFF00))
-    {
-        // increment cycles
-    }
+    HandlePageCross(oldPc, PC);
 }
 
 void Cpu6502::BCS()
