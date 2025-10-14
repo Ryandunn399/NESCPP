@@ -205,24 +205,24 @@ void Cpu6502::initInstructionCycleTable()
     cycleTable[static_cast<uint8_t>(Opcode::LDA_ZEROPAGE)]      = 3;
     cycleTable[static_cast<uint8_t>(Opcode::LDA_ZEROPAGEX)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::LDA_ABSOLUTE)]      = 4;
-    cycleTable[static_cast<uint8_t>(Opcode::LDA_ABSOLUTEX)]     = 4; // +1 if page cross
-    cycleTable[static_cast<uint8_t>(Opcode::LDA_ABSOLUTEY)]     = 4; // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::LDA_ABSOLUTEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::LDA_ABSOLUTEY)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::LDA_INDIRECTX)]     = 6;
-    cycleTable[static_cast<uint8_t>(Opcode::LDA_INDIRECTY)]     = 5; // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::LDA_INDIRECTY)]     = 5;
 
     // LDX
     cycleTable[static_cast<uint8_t>(Opcode::LDX_IMMEDIATE)]     = 2;
     cycleTable[static_cast<uint8_t>(Opcode::LDX_ZEROPAGE)]      = 3;
     cycleTable[static_cast<uint8_t>(Opcode::LDX_ZEROPAGEY)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::LDX_ABSOLUTE)]      = 4;
-    cycleTable[static_cast<uint8_t>(Opcode::LDX_ABSOLUTEY)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::LDX_ABSOLUTEY)]     = 4;
 
     // LDY
     cycleTable[static_cast<uint8_t>(Opcode::LDY_IMMEDIATE)]     = 2;
     cycleTable[static_cast<uint8_t>(Opcode::LDY_ZEROPAGE)]      = 3;
     cycleTable[static_cast<uint8_t>(Opcode::LDY_ZEROPAGEX)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::LDY_ABSOLUTE)]      = 4;
-    cycleTable[static_cast<uint8_t>(Opcode::LDY_ABSOLUTEX)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::LDY_ABSOLUTEX)]     = 4;
 
     // STA
     cycleTable[static_cast<uint8_t>(Opcode::STA_ZEROPAGE)]      = 3;
@@ -254,20 +254,20 @@ void Cpu6502::initInstructionCycleTable()
     cycleTable[static_cast<uint8_t>(Opcode::ADC_ZEROPAGE)]      = 3;
     cycleTable[static_cast<uint8_t>(Opcode::ADC_ZEROPAGEX)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::ADC_ABSOLUTE)]      = 4;
-    cycleTable[static_cast<uint8_t>(Opcode::ADC_ABSOLUTEX)]     = 4;  // +1 if page cross
-    cycleTable[static_cast<uint8_t>(Opcode::ADC_ABSOLUTEY)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::ADC_ABSOLUTEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::ADC_ABSOLUTEY)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::ADC_INDIRECTX)]     = 6;
-    cycleTable[static_cast<uint8_t>(Opcode::ADC_INDIRECTY)]     = 5;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::ADC_INDIRECTY)]     = 5;
 
     // SBC
     cycleTable[static_cast<uint8_t>(Opcode::SBC_IMMEDIATE)]     = 2;
     cycleTable[static_cast<uint8_t>(Opcode::SBC_ZEROPAGE)]      = 3;
     cycleTable[static_cast<uint8_t>(Opcode::SBC_ZEROPAGEX)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::SBC_ABSOLUTE)]      = 4;
-    cycleTable[static_cast<uint8_t>(Opcode::SBC_ABSOLUTEX)]     = 4;  // +1 if page cross
-    cycleTable[static_cast<uint8_t>(Opcode::SBC_ABSOLUTEY)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::SBC_ABSOLUTEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::SBC_ABSOLUTEY)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::SBC_INDIRECTX)]     = 6;
-    cycleTable[static_cast<uint8_t>(Opcode::SBC_INDIRECTY)]     = 5;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::SBC_INDIRECTY)]     = 5;
 
     // INC
     cycleTable[static_cast<uint8_t>(Opcode::INC_ZEROPAGE)]      = 5;
@@ -320,30 +320,30 @@ void Cpu6502::initInstructionCycleTable()
     cycleTable[static_cast<uint8_t>(Opcode::AND_ZEROPAGE)]      = 3;
     cycleTable[static_cast<uint8_t>(Opcode::AND_ZEROPAGEX)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::AND_ABSOLUTE)]      = 4;
-    cycleTable[static_cast<uint8_t>(Opcode::AND_ABSOLUTEX)]     = 4;  // +1 if page cross
-    cycleTable[static_cast<uint8_t>(Opcode::AND_ABSOLUTEY)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::AND_ABSOLUTEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::AND_ABSOLUTEY)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::AND_INDIRECTX)]     = 6;
-    cycleTable[static_cast<uint8_t>(Opcode::AND_INDIRECTY)]     = 5;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::AND_INDIRECTY)]     = 5;
 
     // ORA
     cycleTable[static_cast<uint8_t>(Opcode::ORA_IMMEDIATE)]     = 2;
     cycleTable[static_cast<uint8_t>(Opcode::ORA_ZEROPAGE)]      = 3;
     cycleTable[static_cast<uint8_t>(Opcode::ORA_ZEROPAGEX)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::ORA_ABSOLUTE)]      = 4;
-    cycleTable[static_cast<uint8_t>(Opcode::ORA_ABSOLUTEX)]     = 4;  // +1 if page cross
-    cycleTable[static_cast<uint8_t>(Opcode::ORA_ABSOLUTEY)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::ORA_ABSOLUTEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::ORA_ABSOLUTEY)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::ORA_INDIRECTX)]     = 6;
-    cycleTable[static_cast<uint8_t>(Opcode::ORA_INDIRECTY)]     = 5;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::ORA_INDIRECTY)]     = 5;
 
     // EOR
     cycleTable[static_cast<uint8_t>(Opcode::EOR_IMMEDIATE)]     = 2;
     cycleTable[static_cast<uint8_t>(Opcode::EOR_ZEROPAGE)]      = 3;
-    cycleTable[static_cast<uint8_t>(Opcode::EOR_ZEROPAGEX)]      = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::EOR_ZEROPAGEX)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTE)]      = 4;
-    cycleTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTEX)]     = 4;  // +1 if page cross
-    cycleTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTEY)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::EOR_ABSOLUTEY)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::EOR_INDIRECTX)]     = 6;
-    cycleTable[static_cast<uint8_t>(Opcode::EOR_INDIRECTY)]      = 5;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::EOR_INDIRECTY)]     = 5;
 
     // BIT
     cycleTable[static_cast<uint8_t>(Opcode::BIT_ZEROPAGE)]       = 3;
@@ -354,10 +354,10 @@ void Cpu6502::initInstructionCycleTable()
     cycleTable[static_cast<uint8_t>(Opcode::CMP_ZEROPAGE)]      = 3;
     cycleTable[static_cast<uint8_t>(Opcode::CMP_ZEROPAGEX)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::CMP_ABSOLUTE)]      = 4;
-    cycleTable[static_cast<uint8_t>(Opcode::CMP_ABSOLUTEX)]     = 4;  // +1 if page cross
-    cycleTable[static_cast<uint8_t>(Opcode::CMP_ABSOLUTEY)]     = 4;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::CMP_ABSOLUTEX)]     = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::CMP_ABSOLUTEY)]     = 4;
     cycleTable[static_cast<uint8_t>(Opcode::CMP_INDIRECTX)]     = 6;
-    cycleTable[static_cast<uint8_t>(Opcode::CMP_INDIRECTY)]     = 5;  // +1 if page cross
+    cycleTable[static_cast<uint8_t>(Opcode::CMP_INDIRECTY)]     = 5;
 
     // CPX
     cycleTable[static_cast<uint8_t>(Opcode::CPX_IMMEDIATE)]     = 2;
@@ -369,7 +369,6 @@ void Cpu6502::initInstructionCycleTable()
     cycleTable[static_cast<uint8_t>(Opcode::CPY_ZEROPAGE)]      = 3;
     cycleTable[static_cast<uint8_t>(Opcode::CPY_ABSOLUTE)]      = 4;
 
-    // Branch instructions (all base 2 cycles, +1 if taken, +1 if page cross)
     cycleTable[static_cast<uint8_t>(Opcode::BCC_RELATIVE)]      = 2;
     cycleTable[static_cast<uint8_t>(Opcode::BCS_RELATIVE)]      = 2;
     cycleTable[static_cast<uint8_t>(Opcode::BEQ_RELATIVE)]      = 2;
