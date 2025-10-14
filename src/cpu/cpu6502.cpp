@@ -1318,13 +1318,13 @@ void Cpu6502::CPYAbsolute()
     CPY(AddressingAbsolute());
 }
 
-void Cpu6502::BCC()
+void Cpu6502::ExecuteBranch(bool condition)
 {
     // Grab branch location and increment PC
     int8_t branchOffset = static_cast<int8_t>(memory.ReadByte(PC));
     PC++;
 
-    if (StatusReg.GetCarry() != 0)
+    if (!condition)
         return;
 
     // Branch taken, increment # of cycles
@@ -1336,39 +1336,44 @@ void Cpu6502::BCC()
     HandlePageCross(oldPc, PC);
 }
 
+void Cpu6502::BCC()
+{
+    ExecuteBranch(StatusReg.GetCarry() == 0);
+}
+
 void Cpu6502::BCS()
 {
-    
+    ExecuteBranch(StatusReg.GetCarry() == 1);
 }
 
 void Cpu6502::BEQ()
 {
-    
+    ExecuteBranch(StatusReg.GetZero() == 1);
 }
 
 void Cpu6502::BNE()
 {
-    
+    ExecuteBranch(StatusReg.GetZero() == 0);
 }
 
 void Cpu6502::BPL()
 {
-    
+    ExecuteBranch(StatusReg.GetNegative() == 0);
 }
 
 void Cpu6502::BMI()
 {
-    
+    ExecuteBranch(StatusReg.GetNegative() == 1);
 }
 
 void Cpu6502::BVC()
 {
-    
+    ExecuteBranch(StatusReg.GetOverflow() == 0);
 }
 
 void Cpu6502::BVS()
 {
-    
+    ExecuteBranch(StatusReg.GetOverflow() == 1);
 }
 
 void Cpu6502::HandlePageCross(uint16_t baseAddress, uint16_t effectiveAddress)

@@ -849,6 +849,9 @@ private:
     /// @brief Performs CPY using absolute addressing mode.
     void CPYAbsolute();
 
+    /// @brief Helper for sharing common functionality across branch instructions.
+    void ExecuteBranch(bool condition);
+
     /// @brief Performs the relative BCC instruction.
     void BCC();
 
