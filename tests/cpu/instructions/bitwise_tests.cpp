@@ -7,11 +7,12 @@ TEST_F(Cpu6502Test, AND_Immediate)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10001010;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(2, cycles);  // AND Immediate = 2 cycles
     AssertPCLocation(cpu, 2);
 }
 
@@ -22,11 +23,12 @@ TEST_F(Cpu6502Test, AND_ZeroPage)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10001010;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(3, cycles);  // AND Zero Page = 3 cycles
     AssertPCLocation(cpu, 2);
 }
 
@@ -38,11 +40,12 @@ TEST_F(Cpu6502Test, AND_ZeroPageX)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10001010;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(4, cycles);  // AND Zero Page,X = 4 cycles
     AssertPCLocation(cpu, 2);
 }
 
@@ -53,15 +56,16 @@ TEST_F(Cpu6502Test, AND_Absolute)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10001010;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(4, cycles);  // AND Absolute = 4 cycles
     AssertPCLocation(cpu, 3);
 }
 
-TEST_F(Cpu6502Test, AND_AbsoluteX)
+TEST_F(Cpu6502Test, AND_AbsoluteX_NoPageCross)
 {
     SetupMemory(Memory6502::kRomStart, { 0x3D, 0x00, 0x81 });
     cpu.X = 0x10;
@@ -69,15 +73,33 @@ TEST_F(Cpu6502Test, AND_AbsoluteX)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10001010;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(4, cycles);  // AND Absolute,X = 4 cycles (no page cross)
     AssertPCLocation(cpu, 3);
 }
 
-TEST_F(Cpu6502Test, AND_AbsoluteY)
+TEST_F(Cpu6502Test, AND_AbsoluteX_PageCross)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x3D, 0xFF, 0x80 });
+    cpu.X = 0x11;  // 0x80FF + 0x11 = 0x8110 (page cross)
+    SetupMemory(0x8110, { 0b10101010 });
+    cpu.A = 0b10001111;
+    uint8_t expectedOutput = 0b10001010;
+
+    uint8_t cycles = cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedOutput, cpu.A);
+    EXPECT_EQ(1, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(5, cycles);  // AND Absolute,X = 5 cycles (page cross)
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, AND_AbsoluteY_NoPageCross)
 {
     SetupMemory(Memory6502::kRomStart, { 0x39, 0x00, 0x82 });
     cpu.Y = 0x10;
@@ -85,11 +107,29 @@ TEST_F(Cpu6502Test, AND_AbsoluteY)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10001010;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(4, cycles);  // AND Absolute,Y = 4 cycles (no page cross)
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, AND_AbsoluteY_PageCross)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x39, 0xFF, 0x81 });
+    cpu.Y = 0x11;  // 0x81FF + 0x11 = 0x8210 (page cross)
+    SetupMemory(0x8210, { 0b10101010 });
+    cpu.A = 0b10001111;
+    uint8_t expectedOutput = 0b10001010;
+
+    uint8_t cycles = cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedOutput, cpu.A);
+    EXPECT_EQ(1, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(5, cycles);  // AND Absolute,Y = 5 cycles (page cross)
     AssertPCLocation(cpu, 3);
 }
 
@@ -102,15 +142,16 @@ TEST_F(Cpu6502Test, AND_IndirectX)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10001010;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(6, cycles);  // AND Indirect,X = 6 cycles
     AssertPCLocation(cpu, 2);
 }
 
-TEST_F(Cpu6502Test, AND_IndirectY)
+TEST_F(Cpu6502Test, AND_IndirectY_NoPageCross)
 {
     SetupMemory(Memory6502::kRomStart, { 0x31, 0x40 });
     cpu.Y = 0x10;
@@ -119,25 +160,46 @@ TEST_F(Cpu6502Test, AND_IndirectY)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10001010;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(5, cycles);  // AND Indirect,Y = 5 cycles (no page cross)
     AssertPCLocation(cpu, 2);
 }
 
+TEST_F(Cpu6502Test, AND_IndirectY_PageCross)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x31, 0x40 });
+    cpu.Y = 0x11;
+    SetupMemory(0x40, { 0xFF, 0x83 });  // Low and high byte of address
+    SetupMemory(0x8410, { 0b10101010 });  // 0x83FF + 0x11 = 0x8410 (page cross)
+    cpu.A = 0b10001111;
+    uint8_t expectedOutput = 0b10001010;
+
+    uint8_t cycles = cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedOutput, cpu.A);
+    EXPECT_EQ(1, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(6, cycles);  // AND Indirect,Y = 6 cycles (page cross)
+    AssertPCLocation(cpu, 2);
+}
+
+// ORA Instructions
 TEST_F(Cpu6502Test, ORA_Immediate)
 {
     SetupMemory(Memory6502::kRomStart, { 0x09, 0b10101010 });
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10101111;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(2, cycles);  // ORA Immediate = 2 cycles
     AssertPCLocation(cpu, 2);
 }
 
@@ -148,11 +210,12 @@ TEST_F(Cpu6502Test, ORA_ZeroPage)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10101111;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(3, cycles);  // ORA Zero Page = 3 cycles
     AssertPCLocation(cpu, 2);
 }
 
@@ -164,11 +227,12 @@ TEST_F(Cpu6502Test, ORA_ZeroPageX)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10101111;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(4, cycles);  // ORA Zero Page,X = 4 cycles
     AssertPCLocation(cpu, 2);
 }
 
@@ -179,15 +243,16 @@ TEST_F(Cpu6502Test, ORA_Absolute)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10101111;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(4, cycles);  // ORA Absolute = 4 cycles
     AssertPCLocation(cpu, 3);
 }
 
-TEST_F(Cpu6502Test, ORA_AbsoluteX)
+TEST_F(Cpu6502Test, ORA_AbsoluteX_NoPageCross)
 {
     SetupMemory(Memory6502::kRomStart, { 0x1D, 0xB4, 0xA3 });
     cpu.X = 0x10;
@@ -195,15 +260,33 @@ TEST_F(Cpu6502Test, ORA_AbsoluteX)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10101111;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(4, cycles);  // ORA Absolute,X = 4 cycles (no page cross)
     AssertPCLocation(cpu, 3);
 }
 
-TEST_F(Cpu6502Test, ORA_AbsoluteY)
+TEST_F(Cpu6502Test, ORA_AbsoluteX_PageCross)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x1D, 0xFF, 0xA2 });
+    cpu.X = 0xC5;  // 0xA2FF + 0xC5 = 0xA3C4 (page cross)
+    SetupMemory(0xA3C4, { 0b10101010 });
+    cpu.A = 0b10001111;
+    uint8_t expectedOutput = 0b10101111;
+
+    uint8_t cycles = cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedOutput, cpu.A);
+    EXPECT_EQ(1, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(5, cycles);  // ORA Absolute,X = 5 cycles (page cross)
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, ORA_AbsoluteY_NoPageCross)
 {
     SetupMemory(Memory6502::kRomStart, { 0x19, 0xB4, 0xA3 });
     cpu.Y = 0x10;
@@ -211,11 +294,29 @@ TEST_F(Cpu6502Test, ORA_AbsoluteY)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10101111;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(4, cycles);  // ORA Absolute,Y = 4 cycles (no page cross)
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, ORA_AbsoluteY_PageCross)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x19, 0xFF, 0xA2 });
+    cpu.Y = 0xC5;  // 0xA2FF + 0xC5 = 0xA3C4 (page cross)
+    SetupMemory(0xA3C4, { 0b10101010 });
+    cpu.A = 0b10001111;
+    uint8_t expectedOutput = 0b10101111;
+
+    uint8_t cycles = cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedOutput, cpu.A);
+    EXPECT_EQ(1, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(5, cycles);  // ORA Absolute,Y = 5 cycles (page cross)
     AssertPCLocation(cpu, 3);
 }
 
@@ -228,15 +329,16 @@ TEST_F(Cpu6502Test, ORA_IndirectX)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10101111;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(6, cycles);  // ORA Indirect,X = 6 cycles
     AssertPCLocation(cpu, 2);
 }
 
-TEST_F(Cpu6502Test, ORA_IndirectY)
+TEST_F(Cpu6502Test, ORA_IndirectY_NoPageCross)
 {
     SetupMemory(Memory6502::kRomStart, { 0x11, 0x40 });
     cpu.Y = 0x10;
@@ -245,25 +347,46 @@ TEST_F(Cpu6502Test, ORA_IndirectY)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b10101111;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(5, cycles);  // ORA Indirect,Y = 5 cycles (no page cross)
     AssertPCLocation(cpu, 2);
 }
 
+TEST_F(Cpu6502Test, ORA_IndirectY_PageCross)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x11, 0x40 });
+    cpu.Y = 0xC5;
+    SetupMemory(0x40, { 0xFF, 0xA2 });  // Low and high byte of address
+    SetupMemory(0xA3C4, { 0b10101010 });  // 0xA2FF + 0xC5 = 0xA3C4 (page cross)
+    cpu.A = 0b10001111;
+    uint8_t expectedOutput = 0b10101111;
+
+    uint8_t cycles = cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedOutput, cpu.A);
+    EXPECT_EQ(1, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(6, cycles);  // ORA Indirect,Y = 6 cycles (page cross)
+    AssertPCLocation(cpu, 2);
+}
+
+// EOR Instructions
 TEST_F(Cpu6502Test, EOR_Immediate)
 {
     SetupMemory(Memory6502::kRomStart, { 0x49, 0b10101010 });
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b00100101;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(2, cycles);  // EOR Immediate = 2 cycles
     AssertPCLocation(cpu, 2);
 }
 
@@ -274,11 +397,12 @@ TEST_F(Cpu6502Test, EOR_ZeroPage)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b00100101;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(3, cycles);  // EOR Zero Page = 3 cycles
     AssertPCLocation(cpu, 2);
 }
 
@@ -290,11 +414,12 @@ TEST_F(Cpu6502Test, EOR_ZeroPageX)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b00100101;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(4, cycles);  // EOR Zero Page,X = 4 cycles
     AssertPCLocation(cpu, 2);
 }
 
@@ -305,15 +430,16 @@ TEST_F(Cpu6502Test, EOR_Absolute)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b00100101;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(4, cycles);  // EOR Absolute = 4 cycles
     AssertPCLocation(cpu, 3);
 }
 
-TEST_F(Cpu6502Test, EOR_AbsoluteX)
+TEST_F(Cpu6502Test, EOR_AbsoluteX_NoPageCross)
 {
     SetupMemory(Memory6502::kRomStart, { 0x5D, 0xB4, 0xA3 });
     cpu.X = 0x10;
@@ -321,15 +447,33 @@ TEST_F(Cpu6502Test, EOR_AbsoluteX)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b00100101;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(4, cycles);  // EOR Absolute,X = 4 cycles (no page cross)
     AssertPCLocation(cpu, 3);
 }
 
-TEST_F(Cpu6502Test, EOR_AbsoluteY)
+TEST_F(Cpu6502Test, EOR_AbsoluteX_PageCross)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x5D, 0xFF, 0xA2 });
+    cpu.X = 0xC5;  // 0xA2FF + 0xC5 = 0xA3C4 (page cross)
+    SetupMemory(0xA3C4, { 0b10101010 });
+    cpu.A = 0b10001111;
+    uint8_t expectedOutput = 0b00100101;
+
+    uint8_t cycles = cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedOutput, cpu.A);
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(5, cycles);  // EOR Absolute,X = 5 cycles (page cross)
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, EOR_AbsoluteY_NoPageCross)
 {
     SetupMemory(Memory6502::kRomStart, { 0x59, 0xB4, 0xA3 });
     cpu.Y = 0x10;
@@ -337,11 +481,29 @@ TEST_F(Cpu6502Test, EOR_AbsoluteY)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b00100101;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(4, cycles);  // EOR Absolute,Y = 4 cycles (no page cross)
+    AssertPCLocation(cpu, 3);
+}
+
+TEST_F(Cpu6502Test, EOR_AbsoluteY_PageCross)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x59, 0xFF, 0xA2 });
+    cpu.Y = 0xC5;  // 0xA2FF + 0xC5 = 0xA3C4 (page cross)
+    SetupMemory(0xA3C4, { 0b10101010 });
+    cpu.A = 0b10001111;
+    uint8_t expectedOutput = 0b00100101;
+
+    uint8_t cycles = cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedOutput, cpu.A);
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(5, cycles);  // EOR Absolute,Y = 5 cycles (page cross)
     AssertPCLocation(cpu, 3);
 }
 
@@ -354,15 +516,16 @@ TEST_F(Cpu6502Test, EOR_IndirectX)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b00100101;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(6, cycles);  // EOR Indirect,X = 6 cycles
     AssertPCLocation(cpu, 2);
 }
 
-TEST_F(Cpu6502Test, EOR_IndirectY)
+TEST_F(Cpu6502Test, EOR_IndirectY_NoPageCross)
 {
     SetupMemory(Memory6502::kRomStart, { 0x51, 0x40 });
     cpu.Y = 0x10;
@@ -371,11 +534,30 @@ TEST_F(Cpu6502Test, EOR_IndirectY)
     cpu.A = 0b10001111;
     uint8_t expectedOutput = 0b00100101;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedOutput, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(5, cycles);  // EOR Indirect,Y = 5 cycles (no page cross)
+    AssertPCLocation(cpu, 2);
+}
+
+TEST_F(Cpu6502Test, EOR_IndirectY_PageCross)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x51, 0x40 });
+    cpu.Y = 0xC5;
+    SetupMemory(0x40, { 0xFF, 0xA2 });  // Low and high byte of address
+    SetupMemory(0xA3C4, { 0b10101010 });  // 0xA2FF + 0xC5 = 0xA3C4 (page cross)
+    cpu.A = 0b10001111;
+    uint8_t expectedOutput = 0b00100101;
+
+    uint8_t cycles = cpu.ExecuteInstruction();
+
+    EXPECT_EQ(expectedOutput, cpu.A);
+    EXPECT_EQ(0, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(6, cycles);  // EOR Indirect,Y = 6 cycles (page cross)
     AssertPCLocation(cpu, 2);
 }
 
@@ -413,12 +595,13 @@ TEST_F(Cpu6502Test, BIT_ZeroPage)
     SetupMemory(0x40, { 0b11000000 });
     cpu.A = 0b10000000;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(0b10000000, cpu.A);  // A should remain unchanged
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());  // Bit 7 of memory
     EXPECT_EQ(1, cpu.StatusReg.GetOverflow());  // Bit 6 of memory
     EXPECT_EQ(0, cpu.StatusReg.GetZero());      // A & memory != 0
+    EXPECT_EQ(3, cycles);
     AssertPCLocation(cpu, 2);
 }
 
@@ -428,12 +611,13 @@ TEST_F(Cpu6502Test, BIT_Absolute)
     SetupMemory(0xA3C4, { 0b11000000 });
     cpu.A = 0b10000000;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(0b10000000, cpu.A);  // A should remain unchanged
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());  // Bit 7 of memory
     EXPECT_EQ(1, cpu.StatusReg.GetOverflow());  // Bit 6 of memory
     EXPECT_EQ(0, cpu.StatusReg.GetZero());      // A & memory != 0
+    EXPECT_EQ(4, cycles);
     AssertPCLocation(cpu, 3);
 }
 
