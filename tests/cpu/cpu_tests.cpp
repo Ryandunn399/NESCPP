@@ -10,7 +10,7 @@ TEST_F(Cpu6502Test, InitialState)
     EXPECT_EQ(0, cpu.A);
     EXPECT_EQ(0, cpu.X);
     EXPECT_EQ(0, cpu.Y);
-    EXPECT_EQ(0xFF, cpu.SP);
+    EXPECT_EQ(0xFF, cpu.GetStackPointer());
 }
 
 TEST_F(Cpu6502Test, Reset)
@@ -19,8 +19,10 @@ TEST_F(Cpu6502Test, Reset)
     cpu.A = 0x42;
     cpu.X = 0x33;
     cpu.PC = 0x1234;
-    cpu.SP = 0x80;
-    
+
+    cpu.PushArbitraryByte();
+    cpu.PushArbitraryByte();
+
     // Reset should restore initial state
     cpu.Reset();
     
@@ -28,7 +30,7 @@ TEST_F(Cpu6502Test, Reset)
     EXPECT_EQ(0, cpu.X);
     EXPECT_EQ(0, cpu.Y);
     EXPECT_EQ(Memory6502::kRomStart, cpu.PC);
-    EXPECT_EQ(0xFF, cpu.SP);
+    EXPECT_EQ(0xFF, cpu.GetStackPointer());
 }
 
 // Addressing Mode Tests (using public memory access methods for verification)

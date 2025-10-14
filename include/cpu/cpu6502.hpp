@@ -61,13 +61,6 @@ public:
     uint8_t Y = 0;
 
     /**
-     * @brief Stack pointer.  It will be added to the start address for the stack
-     * and grow downwards as more things get pushed onto the stack.
-     * 
-     */
-    uint8_t SP = 0xFF;
-
-    /**
      * @brief Class that handles functionality of the status register.
      * 
      */
@@ -95,6 +88,12 @@ public:
      */
     uint8_t* GetRawMemory() { return memory.GetRawMemory(); }
 
+    /// @brief Retrieves the stack pointer managed by memory
+    uint8_t GetStackPointer() { return memory.GetStackPointer(); }
+
+    /// @brief Pushes a byte onto memory
+    /// @remarks Should only be used for testing, since we want to make sure reset works properly.
+    void PushArbitraryByte();
 private:
 
     /**
@@ -875,6 +874,22 @@ private:
 
     /// @brief Performs the relative BVS instruction.
     void BVS();
+
+    /// @brief Performs JMP instruction using absolute addressing mode.
+    void JMPAbsolute();
+
+    /**
+     * @brief Performs JMP instruction using indirect addressing mode.
+     * 
+     * @remarks There's a bug that existed on the hardware side of 6502 where
+     * JMP indirect instructions would wrap the low byte of a word if the value
+     * the pointer pointed to in memory ended in 0xFF.  We will simulate this bug
+     * to keep consistent with the hardware elements of the 6502.
+     */
+    void JMPIndirect();
+
+    /// @brief Performs JSR instruction using absolute addressing mode.
+    void JSRAbsolute();
 
     /**
      * @brief Helper method that will evaluate a value and set the zero

@@ -4,6 +4,7 @@
 
 Memory6502::Memory6502()
 {
+    stackPointer = 0xFF;
     memory.fill(0);
 }
 
@@ -51,33 +52,43 @@ void Memory6502::WriteWord(uint16_t address, uint16_t value)
     memory[address + 1] = highByte;
 }
 
-void Memory6502::PushByte(uint8_t& sp, uint8_t value)
+void Memory6502::PushByte(uint8_t value)
 {
-    uint16_t stackAddress = kStackStart + sp;
+    uint16_t stackAddress = kStackStart + stackPointer;
 
     memory[stackAddress] = value;
-    sp--; // Stack grows downwards
+    stackPointer--; // Stack grows downwards
 }
 
-uint8_t Memory6502::PopByte(uint8_t& sp)
+uint8_t Memory6502::PopByte()
 {
-    sp++;
-    uint16_t stackAddress = kStackStart + sp;
+    stackPointer++;
+    uint16_t stackAddress = kStackStart + stackPointer;
     return memory[stackAddress];
 }
 
-void Memory6502::PushWord(uint8_t& sp, uint16_t value)
+void Memory6502::PushWord(uint16_t value)
 {
     // Push high byte first, then low byte
-    PushByte(sp, (value >> 8) & 0xFF);
-    PushByte(sp, value & 0xFF);
+    PushByte((value >> 8) & 0xFF);
+    PushByte(value & 0xFF);
 }
 
-uint16_t Memory6502::PopWord(uint8_t& sp)
+uint16_t Memory6502::PopWord()
 {
-    uint8_t lowByte = PopByte(sp);
-    uint8_t highByte = PopByte(sp);
+    uint8_t lowByte = PopByte();
+    uint8_t highByte = PopByte();
     return lowByte | (highByte << 8);
+}
+
+void Memory6502::ResetStackPointer()
+{
+    stackPointer = 0xFF;
+}
+
+uint8_t Memory6502::GetStackPointer()
+{
+    return stackPointer;
 }
 
 uint8_t Memory6502::ReadZeroPage(uint8_t address)

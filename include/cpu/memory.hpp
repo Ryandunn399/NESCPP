@@ -80,7 +80,7 @@ public:
      * @param sp 
      * @param value 
      */
-    void PushByte(uint8_t& sp, uint8_t value);
+    void PushByte(uint8_t value);
 
     /**
      * @brief Pops a byte off the stack.
@@ -88,7 +88,7 @@ public:
      * @param sp 
      * @return uint8_t 
      */
-    uint8_t PopByte(uint8_t& sp);
+    uint8_t PopByte();
 
     /**
      * @brief Pushes a word onto the stack.
@@ -96,7 +96,7 @@ public:
      * @param sp 
      * @param value 
      */
-    void PushWord(uint8_t& sp, uint16_t value);
+    void PushWord(uint16_t value);
 
     /**
      * @brief Pops a word off the stack.
@@ -104,7 +104,7 @@ public:
      * @param sp 
      * @return uint16_t 
      */
-    uint16_t PopWord(uint8_t& sp);
+    uint16_t PopWord();
 
     /**
      * @brief Reads from zero page.
@@ -138,10 +138,21 @@ public:
      */
     uint8_t* GetRawMemory() { return memory.data(); }
 
+    /// @brief Resets the stack pointer.
+    void ResetStackPointer();
+
+    /// @brief Retrieves current stack pointer value.
+    uint8_t GetStackPointer();
 private:
     /**
      * @brief Memory array for storing our bytes.
      * 
      */
     std::array<uint8_t, kMemorySize> memory;
+
+    /**
+     * @brief Keeps track of the stack pointer.
+     * 
+     */
+    uint8_t stackPointer;
 };

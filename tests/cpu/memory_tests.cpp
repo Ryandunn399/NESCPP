@@ -40,44 +40,40 @@ TEST_F(MemoryTest, ReadWriteWord)
 // Stack Operations Tests
 TEST_F(MemoryTest, StackOperations)
 {
-    uint8_t sp = 0xFF;  // Stack pointer starts at top
-    
     // Push a byte
-    memory.PushByte(sp, 0x42);
-    EXPECT_EQ(0xFE, sp);  // SP should decrease
+    memory.PushByte(0x42);
+    EXPECT_EQ(0xFE, memory.GetStackPointer());  // SP should decrease
     EXPECT_EQ(0x42, memory.ReadByte(Memory6502::kStackStart + 0xFF));
     
     // Push another byte
-    memory.PushByte(sp, 0xAA);
-    EXPECT_EQ(0xFD, sp);
+    memory.PushByte(0xAA);
+    EXPECT_EQ(0xFD, memory.GetStackPointer());
     EXPECT_EQ(0xAA, memory.ReadByte(Memory6502::kStackStart + 0xFE));
     
     // Pop the bytes back (should be in reverse order)
-    uint8_t popped1 = memory.PopByte(sp);
+    uint8_t popped1 = memory.PopByte();
     EXPECT_EQ(0xAA, popped1);
-    EXPECT_EQ(0xFE, sp);
+    EXPECT_EQ(0xFE, memory.GetStackPointer());
     
-    uint8_t popped2 = memory.PopByte(sp);
+    uint8_t popped2 = memory.PopByte();
     EXPECT_EQ(0x42, popped2);
-    EXPECT_EQ(0xFF, sp);  // Back to original
+    EXPECT_EQ(0xFF, memory.GetStackPointer());  // Back to original
 }
 
 TEST_F(MemoryTest, StackWordOperations)
 {
-    uint8_t sp = 0xFF;
-    
     // Push a word
-    memory.PushWord(sp, 0x1234);
-    EXPECT_EQ(0xFD, sp);  // SP decreases by 2
+    memory.PushWord(0x1234);
+    EXPECT_EQ(0xFD, memory.GetStackPointer());  // SP decreases by 2
     
     // Check that high byte was pushed first, low byte second
     EXPECT_EQ(0x12, memory.ReadByte(Memory6502::kStackStart + 0xFF));  // High byte
     EXPECT_EQ(0x34, memory.ReadByte(Memory6502::kStackStart + 0xFE));  // Low byte
     
     // Pop the word back
-    uint16_t popped = memory.PopWord(sp);
+    uint16_t popped = memory.PopWord();
     EXPECT_EQ(0x1234, popped);
-    EXPECT_EQ(0xFF, sp);  // Back to original
+    EXPECT_EQ(0xFF, memory.GetStackPointer());  // Back to original
 }
 
 // Exception Tests

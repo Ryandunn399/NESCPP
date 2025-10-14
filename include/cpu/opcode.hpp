@@ -624,4 +624,13 @@ enum class Opcode: uint8_t
 
     /// @brief Opcode for BPL Relative instruction.
     BVS_RELATIVE = 0x70,
+
+    /// @brief Opcode for JMP Absolute instruction.
+    JMP_ABSOLUTE = 0x4C,
+
+    /// @brief Opcode for JMP Indirect instruction.
+    JMP_INDIRECT = 0x6C,
+
+    /// @brief Opcode for JSR Absolute instruction.
+    JSR_ABSOLUTE = 0x20,
 };

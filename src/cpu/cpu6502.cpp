@@ -194,6 +194,13 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::BMI_RELATIVE)]     = &Cpu6502::BMI;
     opcodeTable[static_cast<uint8_t>(Opcode::BVC_RELATIVE)]     = &Cpu6502::BVC;
     opcodeTable[static_cast<uint8_t>(Opcode::BVS_RELATIVE)]     = &Cpu6502::BVS;
+
+    // JMP
+    opcodeTable[static_cast<uint8_t>(Opcode::JMP_ABSOLUTE)]     = &Cpu6502::JMPAbsolute;
+    opcodeTable[static_cast<uint8_t>(Opcode::JMP_INDIRECT)]     = &Cpu6502::JMPIndirect;
+
+    // JSR
+    opcodeTable[static_cast<uint8_t>(Opcode::JSR_ABSOLUTE)]     = &Cpu6502::JSRAbsolute;
 }
 
 void Cpu6502::initInstructionCycleTable()
@@ -369,6 +376,7 @@ void Cpu6502::initInstructionCycleTable()
     cycleTable[static_cast<uint8_t>(Opcode::CPY_ZEROPAGE)]      = 3;
     cycleTable[static_cast<uint8_t>(Opcode::CPY_ABSOLUTE)]      = 4;
 
+    // Branch instructions
     cycleTable[static_cast<uint8_t>(Opcode::BCC_RELATIVE)]      = 2;
     cycleTable[static_cast<uint8_t>(Opcode::BCS_RELATIVE)]      = 2;
     cycleTable[static_cast<uint8_t>(Opcode::BEQ_RELATIVE)]      = 2;
@@ -377,6 +385,13 @@ void Cpu6502::initInstructionCycleTable()
     cycleTable[static_cast<uint8_t>(Opcode::BMI_RELATIVE)]      = 2;
     cycleTable[static_cast<uint8_t>(Opcode::BVC_RELATIVE)]      = 2;
     cycleTable[static_cast<uint8_t>(Opcode::BVS_RELATIVE)]      = 2;
+
+    // JMP
+    cycleTable[static_cast<uint8_t>(Opcode::JMP_ABSOLUTE)]      = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::JMP_INDIRECT)]      = 5;
+
+    // JSR
+    cycleTable[static_cast<uint8_t>(Opcode::JSR_ABSOLUTE)]      = 6;
 }
 
 void Cpu6502::Reset()
@@ -386,7 +401,7 @@ void Cpu6502::Reset()
     A = 0;
     X = 0;
     Y = 0;
-    SP = 0xFF;
+    memory.ResetStackPointer();
     totalCycles = 0;
     currentInstructionCycles = 0;
 }
@@ -1376,6 +1391,33 @@ void Cpu6502::BVS()
     ExecuteBranch(StatusReg.GetOverflow() == 1);
 }
 
+void Cpu6502::JMPAbsolute()
+{
+    PC = memory.ReadWord(PC);
+}
+
+void Cpu6502::JMPIndirect()
+{
+    uint16_t pointer = memory.ReadWord(PC);
+
+    // Bug occurs
+    if ((pointer & 0xFF) == 0xFF)
+    {
+        uint8_t lowByte = memory.ReadByte(pointer);
+        uint8_t highByte = memory.ReadByte(pointer & 0xFF00);
+        PC = lowByte | (highByte << 8);
+        return;
+    }
+
+    PC = memory.ReadWord(pointer);
+}
+
+void Cpu6502::JSRAbsolute()
+{
+    uint16_t returnAddress = PC + 2;
+    memory.PushWord(returnAddress);
+}
+
 void Cpu6502::HandlePageCross(uint16_t baseAddress, uint16_t effectiveAddress)
 {
     if ((baseAddress & 0xFF00) != (effectiveAddress & 0xFF00))
@@ -1386,4 +1428,9 @@ void Cpu6502::SetNZFlags(uint8_t value)
 {
     StatusReg.SetZero(value == 0);
     StatusReg.SetNegative((value & 0x80) != 0);
+}
+
+void Cpu6502::PushArbitraryByte()
+{
+    memory.PushByte(0x11);
 }
