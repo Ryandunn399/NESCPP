@@ -7,10 +7,11 @@ TEST_F(Cpu6502Test, TAX)
     cpu.A = 0x9;
     cpu.X = 0x1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(0x9, cpu.A);
     EXPECT_EQ(0x9, cpu.X);
+    EXPECT_EQ(2, cycles);
     AssertPCLocation(cpu, 1);
 }
 
@@ -20,10 +21,11 @@ TEST_F(Cpu6502Test, TXA)
     cpu.A = 0x9;
     cpu.X = 0x1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(0x1, cpu.A);
     EXPECT_EQ(0x1, cpu.X);
+    EXPECT_EQ(2, cycles);
     AssertPCLocation(cpu, 1);
 }
 
@@ -33,10 +35,11 @@ TEST_F(Cpu6502Test, TAY)
     cpu.A = 0x11;
     cpu.Y = 0xBB;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(0x11, cpu.A);
     EXPECT_EQ(0x11, cpu.Y);
+    EXPECT_EQ(2, cycles);
     AssertPCLocation(cpu, 1);
 }
 
@@ -46,9 +49,10 @@ TEST_F(Cpu6502Test, TYA)
     cpu.A = 0x11;
     cpu.Y = 0xBB;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(0xBB, cpu.A);
     EXPECT_EQ(0xBB, cpu.Y);
+    EXPECT_EQ(2, cycles);
     AssertPCLocation(cpu, 1);
 }
