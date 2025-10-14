@@ -8,11 +8,13 @@ TEST_F(Cpu6502Test, ASL_Accumulator)
     cpu.A = 0x10;
     uint8_t expectedResult = 0x10 << 1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
+
     EXPECT_EQ(expectedResult, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(2, cycles);
     AssertPCLocation(cpu, 1);
 }
 
@@ -23,12 +25,13 @@ TEST_F(Cpu6502Test, ASL_AccumulatorNegativeCarry)
     uint8_t expectedResult = 0xFF;
     expectedResult <<= 1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(2, cycles);
     AssertPCLocation(cpu, 1);
 }
 
@@ -38,12 +41,13 @@ TEST_F(Cpu6502Test, ASL_ZeroPage)
     SetupMemory(0x20, { 0x30 });
     uint8_t expectedResult = 0x30 << 1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x20));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(5, cycles);
     AssertPCLocation(cpu, 2);
 }
 
@@ -54,12 +58,13 @@ TEST_F(Cpu6502Test, ASL_ZeroPageNegativeCarry)
     uint8_t expectedResult = 0xFF;
     expectedResult <<= 1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x20));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(5, cycles);
     AssertPCLocation(cpu, 2);
 }
 
@@ -70,12 +75,13 @@ TEST_F(Cpu6502Test, ASL_ZeroPageX)
     cpu.X = 0x5;
     uint8_t expectedResult = 0x30 << 1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x20 + 0x5));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(6, cycles);
     AssertPCLocation(cpu, 2);
 }
 
@@ -85,12 +91,13 @@ TEST_F(Cpu6502Test, ASL_Absolute)
     SetupMemory(0x1234, { 0x36 });
     uint8_t expectedResult = 0x36 << 1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x1234));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(6, cycles);
     AssertPCLocation(cpu, 3);
 }
 
@@ -101,12 +108,13 @@ TEST_F(Cpu6502Test, ASL_AbsoluteX)
     cpu.X = 0x6;
     uint8_t expectedResult = 0x36 << 1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x1234 + 0x6));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(7, cycles);
     AssertPCLocation(cpu, 3);
 }
 
@@ -116,12 +124,13 @@ TEST_F(Cpu6502Test, LSR_Accumulator)
     cpu.A = 0x10;
     uint8_t expectedResult = 0x10 >> 1;
     
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(2, cycles);
     AssertPCLocation(cpu, 1);
 }
 
@@ -131,12 +140,13 @@ TEST_F(Cpu6502Test, LSR_AccumulatorCarry)
     cpu.A = 0xFF;
     uint8_t expectedResult = 0xFF >> 1;
     
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(2, cycles);
     AssertPCLocation(cpu, 1);
 }
 
@@ -146,12 +156,13 @@ TEST_F(Cpu6502Test, LSR_ZeroPage)
     SetupMemory(0x30, { 0x42 });
     uint8_t expectedResult = 0x42 >> 1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x30));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(5, cycles);
     AssertPCLocation(cpu, 2);
 }
 
@@ -161,12 +172,13 @@ TEST_F(Cpu6502Test, LSR_ZeroPageCarry)
     SetupMemory(0x30, { 0xFF });
     uint8_t expectedResult = 0xFF >> 1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x30));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(5, cycles);
     AssertPCLocation(cpu, 2);
 }
 
@@ -177,13 +189,14 @@ TEST_F(Cpu6502Test, LSR_ZeroPageX)
     cpu.X = 0x5;
     uint8_t expectedResult = 0x10 >> 1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     uint8_t memoryValue = memory.ReadByte(0x30 + 0x5);
     EXPECT_EQ(expectedResult, memoryValue);
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(6, cycles);
     AssertPCLocation(cpu, 2);
 }
 
@@ -193,12 +206,13 @@ TEST_F(Cpu6502Test, LSR_Absolute)
     SetupMemory(0x1234, { 0x10 });
     uint8_t expectedResult = 0x10 >> 1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x1234));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(6, cycles);
     AssertPCLocation(cpu, 3);
 }
 
@@ -209,12 +223,13 @@ TEST_F(Cpu6502Test, LSR_AbsoluteX)
     cpu.X = 0x5;
     uint8_t expectedResult = 0x10 >> 1;
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x1234 + 0x5));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(7, cycles);
     AssertPCLocation(cpu, 3);
 }
 
@@ -224,12 +239,13 @@ TEST_F(Cpu6502Test, ROL_Accumulator)
     cpu.A = 0x20;
     uint8_t expectedResult = std::rotl(cpu.A, 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(2, cycles);
     AssertPCLocation(cpu, 1);
 }
 
@@ -240,12 +256,13 @@ TEST_F(Cpu6502Test, ROL_AccumulatorCarryNegative)
     cpu.StatusReg.SetCarry(0x1);
     uint8_t expectedResult = std::rotl(cpu.A, 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(2, cycles);
     AssertPCLocation(cpu, 1);
 }
 
@@ -255,12 +272,13 @@ TEST_F(Cpu6502Test, ROL_ZeroPage)
     SetupMemory(0x30, { 0x20 });
     uint8_t expectedResult = std::rotl(memory.ReadByte(0x30), 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x30));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(5, cycles);
     AssertPCLocation(cpu, 2);
 }
 
@@ -271,12 +289,13 @@ TEST_F(Cpu6502Test, ROL_ZeroPageNegativeCarry)
     cpu.StatusReg.SetCarry(0x1);
     uint8_t expectedResult = std::rotl(memory.ReadByte(0x30), 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x30));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(5, cycles);
     AssertPCLocation(cpu, 2);
 }
 
@@ -287,12 +306,13 @@ TEST_F(Cpu6502Test, ROL_ZeroPageX)
     cpu.X = 0x5;
     uint8_t expectedResult = std::rotl(memory.ReadByte(0x30 + 0x5), 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x30 + 0x5));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(6, cycles);
     AssertPCLocation(cpu, 2);
 }
 
@@ -302,12 +322,13 @@ TEST_F(Cpu6502Test, ROL_Absolute)
     SetupMemory(0x1234, { 0x20 });
     uint8_t expectedResult = std::rotl(memory.ReadByte(0x1234), 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x1234));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(6, cycles);
     AssertPCLocation(cpu, 3);
 }
 
@@ -318,12 +339,13 @@ TEST_F(Cpu6502Test, ROL_AbsoluteX)
     cpu.X = 0x5;
     uint8_t expectedResult = std::rotl(memory.ReadByte(0x1234 + 0x5), 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x1234 + 0x5));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(7, cycles);
     AssertPCLocation(cpu, 3);
 }
 
@@ -333,12 +355,13 @@ TEST_F(Cpu6502Test, ROR_Accumulator)
     cpu.A = 0x40;
     uint8_t expectedResult = std::rotr(cpu.A, 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(2, cycles);
     AssertPCLocation(cpu, 1);
 }
 
@@ -349,12 +372,13 @@ TEST_F(Cpu6502Test, ROR_AccumulatorNegativeCarry)
     cpu.StatusReg.SetCarry(0x1);
     uint8_t expectedResult = std::rotr(cpu.A, 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, cpu.A);
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(2, cycles);
     AssertPCLocation(cpu, 1);
 }
 
@@ -364,12 +388,13 @@ TEST_F(Cpu6502Test, ROR_ZeroPage)
     SetupMemory(0x30, { 0x40 });
     uint8_t expectedResult = std::rotr(memory.ReadByte(0x30), 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x30));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(5, cycles);
     AssertPCLocation(cpu, 2);
 }
 
@@ -380,12 +405,13 @@ TEST_F(Cpu6502Test, ROR_ZeroPageNegativeCarry)
     cpu.StatusReg.SetCarry(0x1);
     uint8_t expectedResult = std::rotr(memory.ReadByte(0x30), 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x30));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(1, cpu.StatusReg.GetNegative());
     EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(5, cycles);
     AssertPCLocation(cpu, 2);
 }
 
@@ -396,12 +422,13 @@ TEST_F(Cpu6502Test, ROR_ZeroPageX)
     cpu.X = 0x5;
     uint8_t expectedResult = std::rotr(memory.ReadByte(0x30 + 0x5), 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x30 + 0x5));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(6, cycles);
     AssertPCLocation(cpu, 2);
 }
 
@@ -411,12 +438,13 @@ TEST_F(Cpu6502Test, ROR_Absolute)
     SetupMemory(0x1234, { 0x40 });
     uint8_t expectedResult = std::rotr(memory.ReadByte(0x1234), 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x1234));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(6, cycles);
     AssertPCLocation(cpu, 3);
 }
 
@@ -427,11 +455,12 @@ TEST_F(Cpu6502Test, ROR_AbsoluteX)
     cpu.X = 0x5;
     uint8_t expectedResult = std::rotr(memory.ReadByte(0x1234 + 0x5), 1);
 
-    cpu.ExecuteInstruction();
+    uint8_t cycles = cpu.ExecuteInstruction();
 
     EXPECT_EQ(expectedResult, memory.ReadByte(0x1234 + 0x5));
     EXPECT_EQ(0, cpu.StatusReg.GetZero());
     EXPECT_EQ(0, cpu.StatusReg.GetNegative());
     EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(7, cycles);
     AssertPCLocation(cpu, 3);
 }
