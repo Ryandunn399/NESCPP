@@ -60,14 +60,14 @@ public:
      * 
      * @return int 
      */
-    int GetInterrupt() const { return flags.interrupt; }
+    int GetInterruptDisable() const { return flags.interrupt; }
 
     /**
      * @brief Set the Interrupt bit
      * 
      * @param value 
      */
-    void SetInterrupt(bool value) { flags.interrupt = value; }
+    void SetInterruptDisable(bool value) { flags.interrupt = value; }
 
     /**
      * @brief Get the Decimal bit

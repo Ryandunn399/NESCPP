@@ -894,6 +894,8 @@ private:
     /// @brief Performs RTS instruction using implied addressing mode.
     void RTSImplied();
 
+    void BRK();
+    
     /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.
