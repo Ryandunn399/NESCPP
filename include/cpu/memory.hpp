@@ -26,6 +26,12 @@ public:
     static constexpr uint16_t kRomStart = 0x8000;
     static constexpr uint16_t kRomEnd = 0xFFFF;
 
+        /**
+     * @brief Keeps track of the stack pointer.
+     * 
+     */
+    uint8_t StackPointer;
+
     /**
      * @brief Construct a new Memory object.
      * 
@@ -140,19 +146,10 @@ public:
 
     /// @brief Resets the stack pointer.
     void ResetStackPointer();
-
-    /// @brief Retrieves current stack pointer value.
-    uint8_t GetStackPointer();
 private:
     /**
      * @brief Memory array for storing our bytes.
      * 
      */
     std::array<uint8_t, kMemorySize> memory;
-
-    /**
-     * @brief Keeps track of the stack pointer.
-     * 
-     */
-    uint8_t stackPointer;
 };

@@ -1414,8 +1414,11 @@ void Cpu6502::JMPIndirect()
 
 void Cpu6502::JSRAbsolute()
 {
-    uint16_t returnAddress = PC + 2;
+    // Increment by one since the program counter has already been incremented
+    // once to fetch the actual instruction
+    uint16_t returnAddress = PC + 1;
     memory.PushWord(returnAddress);
+    PC = memory.ReadWord(PC);
 }
 
 void Cpu6502::HandlePageCross(uint16_t baseAddress, uint16_t effectiveAddress)

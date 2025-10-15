@@ -89,7 +89,7 @@ public:
     uint8_t* GetRawMemory() { return memory.GetRawMemory(); }
 
     /// @brief Retrieves the stack pointer managed by memory
-    uint8_t GetStackPointer() { return memory.GetStackPointer(); }
+    uint8_t GetStackPointer() { return memory.StackPointer; }
 
     /// @brief Pushes a byte onto memory
     /// @remarks Should only be used for testing, since we want to make sure reset works properly.

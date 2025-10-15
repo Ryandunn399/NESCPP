@@ -4,7 +4,7 @@
 
 Memory6502::Memory6502()
 {
-    stackPointer = 0xFF;
+    StackPointer = 0xFF;
     memory.fill(0);
 }
 
@@ -54,16 +54,16 @@ void Memory6502::WriteWord(uint16_t address, uint16_t value)
 
 void Memory6502::PushByte(uint8_t value)
 {
-    uint16_t stackAddress = kStackStart + stackPointer;
+    uint16_t stackAddress = kStackStart + StackPointer;
 
     memory[stackAddress] = value;
-    stackPointer--; // Stack grows downwards
+    StackPointer--; // Stack grows downwards
 }
 
 uint8_t Memory6502::PopByte()
 {
-    stackPointer++;
-    uint16_t stackAddress = kStackStart + stackPointer;
+    StackPointer++;
+    uint16_t stackAddress = kStackStart + StackPointer;
     return memory[stackAddress];
 }
 
@@ -83,12 +83,7 @@ uint16_t Memory6502::PopWord()
 
 void Memory6502::ResetStackPointer()
 {
-    stackPointer = 0xFF;
-}
-
-uint8_t Memory6502::GetStackPointer()
-{
-    return stackPointer;
+    StackPointer = 0xFF;
 }
 
 uint8_t Memory6502::ReadZeroPage(uint8_t address)
