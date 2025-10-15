@@ -1094,7 +1094,7 @@ void Cpu6502::RTIImplied()
     
     // Restore flags, but ignore B flag (bit 4) and unused bit (bit 5)
     // The status register doesn't have a B flag - it only exists on the stack
-    uint8_t statusRegVal = (stackStatus & 0b11001111) | (StatusReg.GetRegister() & 0b00110000);
+    uint8_t statusRegVal = (stackStatus & 0b11101111) | (StatusReg.GetRegister() & 0b00110000);
     StatusReg.SetRegister(statusRegVal);
 
     // Pull PC

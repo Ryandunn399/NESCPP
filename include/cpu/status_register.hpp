@@ -98,6 +98,13 @@ public:
     void SetBreak(bool value) { flags.brk = value; }
 
     /**
+     * @brief Get the Used object
+     * 
+     * @return int 
+     */
+    int GetUnused() const { return flags.unused; }
+
+    /**
      * @brief Get the Overflow bit
      * 
      * @return int 

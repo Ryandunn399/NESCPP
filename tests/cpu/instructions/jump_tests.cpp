@@ -206,7 +206,7 @@ TEST_F(Cpu6502Test, RTI_Basic)
     
     // Manually setup stack as if interrupt occurred
     memory.PushWord(0x8050);
-    memory.PushByte(0b11000101);
+    memory.PushByte(0b11100101);
 
     uint8_t cycles = cpu.ExecuteInstruction();
     
@@ -243,6 +243,7 @@ TEST_F(Cpu6502Test, RTI_IgnoresBFlag)
 
     // Check that bit 4 (B flag) is not set in actual register
     EXPECT_EQ(0, (status >> 4) & 1);
+    EXPECT_EQ(1, (status >> 5) & 1);
 }
 
 TEST_F(Cpu6502Test, BRK_RTI_RoundTrip)
@@ -325,6 +326,8 @@ TEST_F(Cpu6502Test, RTI_RestoresAllFlags)
     EXPECT_EQ(1, cpu.StatusReg.GetInterruptDisable());
     EXPECT_EQ(1, cpu.StatusReg.GetZero());
     EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(1, cpu.StatusReg.GetUnused());
+    EXPECT_EQ(0, cpu.StatusReg.GetBreak());
 }
 
 TEST_F(Cpu6502Test, RTI_StackNearWrap)
