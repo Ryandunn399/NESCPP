@@ -1071,12 +1071,11 @@ void Cpu6502::BRK()
     uint16_t returnAddress = PC + 1;
     memory.PushWord(returnAddress);
 
+    StatusReg.SetInterruptDisable(1);
     // / Push status register with B flag (bit 4) set and unused bit (bit 5) always set
     uint8_t statusWithBFlag = StatusReg.GetRegister() | 0b00110000;
     memory.PushByte(statusWithBFlag);
-
-    StatusReg.SetInterruptDisable(1);
-
+    
     // Check if NMI occured during BRK to invoke NMI hijacking vector read
     if (nmiPending)
     {
@@ -1086,6 +1085,20 @@ void Cpu6502::BRK()
     }
 
     PC = memory.ReadWord(Memory6502::kIRQVector);
+}
+
+void Cpu6502::RTIImplied()
+{
+    // Pull status register from stack
+    uint8_t stackStatus = memory.PopByte();
+    
+    // Restore flags, but ignore B flag (bit 4) and unused bit (bit 5)
+    // The status register doesn't have a B flag - it only exists on the stack
+    uint8_t statusRegVal = (stackStatus & 0b11001111) | (StatusReg.GetRegister() & 0b00110000);
+    StatusReg.SetRegister(statusRegVal);
+
+    // Pull PC
+    PC = memory.PopWord();
 }
 
 void Cpu6502::HandlePageCross(uint16_t baseAddress, uint16_t effectiveAddress)
@@ -1106,7 +1119,7 @@ void Cpu6502::TriggerIRQ()
 
 void Cpu6502::HandleNMI()
 {
-    memory.PushWord(PC);
+    memory.PushWord(PC + 1);
 
     uint8_t statusWithoutBFlag = StatusReg.GetRegister() | 0b00100000;
     memory.PushByte(statusWithoutBFlag);
@@ -1335,7 +1348,11 @@ void Cpu6502::initOpcodeTable()
     // RTS
     opcodeTable[static_cast<uint8_t>(Opcode::RTS_IMPLIED)]      = &Cpu6502::RTSImplied;
 
+    // BRK
     opcodeTable[static_cast<uint8_t>(Opcode::BRK)]              = &Cpu6502::BRK;
+
+    // RTI
+    opcodeTable[static_cast<uint8_t>(Opcode::RTI_IMPLIED)]      = &Cpu6502::RTIImplied;
 }
 
 void Cpu6502::initInstructionCycleTable()
@@ -1533,4 +1550,7 @@ void Cpu6502::initInstructionCycleTable()
 
     // BRK
     cycleTable[static_cast<uint8_t>(Opcode::BRK)]               = 7;
+
+    // RTI
+    cycleTable[static_cast<uint8_t>(Opcode::RTI_IMPLIED)]       = 6;
 }

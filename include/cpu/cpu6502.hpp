@@ -910,6 +910,9 @@ private:
     /// @brief Performs BRK instruction.
     void BRK();
 
+    /// @brief Performs RTI using implied addressing mode.
+    void RTIImplied();
+
     /// @brief Method for handling an NMI at the beginning of the CPU fetch execute.
     void HandleNMI();
     

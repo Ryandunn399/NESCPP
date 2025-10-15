@@ -70,6 +70,8 @@ uint8_t Memory6502::PopByte()
 void Memory6502::PushWord(uint16_t value)
 {
     // Push high byte first, then low byte
+    uint8_t highValue = (value >> 8) & 0xFF;
+    uint8_t lowValue = value & 0xFF;
     PushByte((value >> 8) & 0xFF);
     PushByte(value & 0xFF);
 }

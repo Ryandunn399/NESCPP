@@ -638,5 +638,8 @@ enum class Opcode: uint8_t
     RTS_IMPLIED = 0x60,
 
     /// @brief Opcode for BRK instruction.
-    BRK = 0x00
+    BRK = 0x00,
+
+    /// @brief Opcode for RTI Implied instruction.
+    RTI_IMPLIED = 0x40,
 };

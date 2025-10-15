@@ -198,3 +198,196 @@ TEST_F(Cpu6502Test, BRK_StackWrap)
     // Data wraps around stack page
     EXPECT_EQ(0xC000, cpu.PC);  // Still executes correctly
 }
+
+TEST_F(Cpu6502Test, RTI_Basic)
+{
+    // Setup RTI instruction
+    SetupMemory(Memory6502::kRomStart, { 0x40 });
+    
+    // Manually setup stack as if interrupt occurred
+    memory.PushWord(0x8050);
+    memory.PushByte(0b11000101);
+
+    uint8_t cycles = cpu.ExecuteInstruction();
+    
+    // Check PC restored
+    EXPECT_EQ(0x8050, cpu.PC);
+    
+    // Check status flags restored
+    EXPECT_EQ(1, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(1, cpu.StatusReg.GetOverflow());
+    EXPECT_EQ(0, cpu.StatusReg.GetDecimal());
+    EXPECT_EQ(1, cpu.StatusReg.GetInterruptDisable());
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+    
+    // Check stack pointer restored
+    EXPECT_EQ(0xFF, cpu.GetStackPointer());
+    
+    EXPECT_EQ(6, cycles);
+}
+
+TEST_F(Cpu6502Test, RTI_IgnoresBFlag)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x40 });
+    
+    memory.PushWord(0x8000);
+
+    // Push status with B flag set (as BRK would)
+    memory.PushByte(0b00110000);
+    
+    cpu.ExecuteInstruction();
+    
+    // B flag should not affect status register
+    uint8_t status = cpu.StatusReg.GetRegister();
+
+    // Check that bit 4 (B flag) is not set in actual register
+    EXPECT_EQ(0, (status >> 4) & 1);
+}
+
+TEST_F(Cpu6502Test, BRK_RTI_RoundTrip)
+{
+    // Setup BRK and RTI
+    SetupMemory(Memory6502::kRomStart, { 0x00, 0x00, 0xA9, 0x42 });
+    SetupMemory(0xFFFE, { 0x00, 0xC0 });
+    SetupMemory(0xC000, { 0x40 });
+    
+    // Set some flags before BRK
+    cpu.StatusReg.SetCarry(1);
+    cpu.StatusReg.SetZero(1);
+    cpu.StatusReg.SetOverflow(1);
+    
+    uint16_t originalPC = cpu.PC;
+    
+    // Execute BRK
+    cpu.ExecuteInstruction();
+    EXPECT_EQ(0xC000, cpu.PC);
+    EXPECT_EQ(0xFC, cpu.GetStackPointer());
+    
+    // Execute RTI
+    cpu.ExecuteInstruction();
+    EXPECT_EQ(originalPC + 2, cpu.PC);
+    EXPECT_EQ(0xFF, cpu.GetStackPointer());
+    
+    // Flags restored (except I flag which BRK set)
+    EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(1, cpu.StatusReg.GetZero());
+    EXPECT_EQ(1, cpu.StatusReg.GetOverflow());
+    EXPECT_EQ(1, cpu.StatusReg.GetInterruptDisable());
+}
+
+TEST_F(Cpu6502Test, NMI_RTI_RoundTrip)
+{
+    // Setup code and NMI handler
+    SetupMemory(Memory6502::kRomStart, { 0xA9, 0x42 });
+    SetupMemory(0xFFFA, { 0x00, 0xD0 });
+    SetupMemory(0xD000, { 0x40 });
+    
+    // Set some flags
+    cpu.StatusReg.SetNegative(1);
+    cpu.StatusReg.SetCarry(1);
+    
+    uint16_t originalPC = cpu.PC;
+    uint8_t originalStatus = cpu.StatusReg.GetRegister();
+    
+    // Trigger and handle NMI
+    cpu.TriggerNMI();
+    cpu.ExecuteInstruction();
+    EXPECT_EQ(0xD000, cpu.PC);
+    
+    // Execute RTI
+    cpu.ExecuteInstruction();
+    EXPECT_EQ(originalPC + 2, cpu.PC);
+    
+    // Flags restored (NMI doesn't set I flag)
+    EXPECT_EQ(1, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+}
+
+TEST_F(Cpu6502Test, RTI_RestoresAllFlags)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x40 });
+    
+    memory.PushWord(0x9000);
+
+    // Push all flags set
+    memory.PushByte(0b11111111);
+    
+    cpu.ExecuteInstruction();
+    
+    EXPECT_EQ(0x9000, cpu.PC);
+    EXPECT_EQ(1, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(1, cpu.StatusReg.GetOverflow());
+
+    // Bit 5 (unused) - depends on implementation
+    // Bit 4 (B) should be ignored
+    EXPECT_EQ(1, cpu.StatusReg.GetDecimal());
+    EXPECT_EQ(1, cpu.StatusReg.GetInterruptDisable());
+    EXPECT_EQ(1, cpu.StatusReg.GetZero());
+    EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+}
+
+TEST_F(Cpu6502Test, RTI_StackNearWrap)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x40 });
+    
+    // Set stack pointer near top (wrapping scenario)
+    memory.StackPointer = 0xFD;
+    
+    // Manually setup stack (wraps around)
+    memory.WriteByte(0x01FE, 0b10000001);
+    memory.WriteByte(0x01FF, 0x34);
+    memory.WriteByte(0x0100, 0x12);
+    
+    cpu.ExecuteInstruction();
+    
+    // Should handle wrap correctly
+    EXPECT_EQ(0x1234, cpu.PC);
+    EXPECT_EQ(1, cpu.StatusReg.GetNegative());
+    EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+    EXPECT_EQ(0x00, cpu.GetStackPointer());
+}
+
+TEST_F(Cpu6502Test, RTI_CanClearInterruptFlag)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x40 });
+    
+    // Set I flag in CPU initially
+    cpu.StatusReg.SetInterruptDisable(1);
+    
+    memory.PushWord(0x8000);
+
+    // Push status with I=0
+    memory.PushByte(0b00000000);
+    
+    cpu.ExecuteInstruction();
+    
+    // I flag should be cleared (restored from stack)
+    EXPECT_EQ(0, cpu.StatusReg.GetInterruptDisable());
+}
+
+TEST_F(Cpu6502Test, RTI_NestedInterrupts)
+{
+    // First interrupt pushes to stack
+    memory.PushWord(0x8000);
+    memory.PushByte(0b00000001);
+    
+    // Second interrupt pushes to stack
+    memory.PushWord(0x9000);
+    memory.PushByte(0b00000010);
+    
+    SetupMemory(Memory6502::kRomStart, { 0x40, 0x40 });
+    
+    // First RTI - returns from second interrupt
+    cpu.ExecuteInstruction();
+    EXPECT_EQ(0x9000, cpu.PC);
+    EXPECT_EQ(1, cpu.StatusReg.GetZero());
+    EXPECT_EQ(0, cpu.StatusReg.GetCarry());
+    
+    // Second RTI - returns from first interrupt
+    cpu.PC = Memory6502::kRomStart + 1;
+    cpu.ExecuteInstruction();
+    EXPECT_EQ(0x8000, cpu.PC);
+    EXPECT_EQ(0, cpu.StatusReg.GetZero());
+    EXPECT_EQ(1, cpu.StatusReg.GetCarry());
+}
