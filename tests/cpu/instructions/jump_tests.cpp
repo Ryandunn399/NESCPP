@@ -83,3 +83,23 @@ TEST_F(Cpu6502Test, JSR_StackWrap)
     EXPECT_EQ(0xFF, cpu.GetStackPointer());  // Wraps around
     // Return address stored at $0100 and $0101
 }
+
+TEST_F(Cpu6502Test, RTSImplied)
+{
+    SetupMemory(Memory6502::kRomStart, { 0x20, 0x34, 0x12, 0xAA });
+    SetupMemory(0x1234, { 0x60 });
+    
+    uint16_t returnAddress = Memory6502::kRomStart + 3;  // Next instruction after JSR
+
+    // Execute JSR
+    uint8_t cycles = cpu.ExecuteInstruction();
+    EXPECT_EQ(0x1234, cpu.PC);
+    EXPECT_EQ(0xFD, cpu.GetStackPointer());
+    EXPECT_EQ(6, cycles);
+
+    // Execute RTS
+    cycles = cpu.ExecuteInstruction();
+    EXPECT_EQ(returnAddress, cpu.PC);  // More direct check
+    EXPECT_EQ(0xFF, cpu.GetStackPointer());  // Stack restored
+    EXPECT_EQ(6, cycles);
+}

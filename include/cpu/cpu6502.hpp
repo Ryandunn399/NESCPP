@@ -891,6 +891,9 @@ private:
     /// @brief Performs JSR instruction using absolute addressing mode.
     void JSRAbsolute();
 
+    /// @brief Performs RTS instruction using implied addressing mode.
+    void RTSImplied();
+
     /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.

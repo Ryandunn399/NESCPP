@@ -201,6 +201,9 @@ void Cpu6502::initOpcodeTable()
 
     // JSR
     opcodeTable[static_cast<uint8_t>(Opcode::JSR_ABSOLUTE)]     = &Cpu6502::JSRAbsolute;
+
+    // RTS
+    opcodeTable[static_cast<uint8_t>(Opcode::RTS_IMPLIED)]      = &Cpu6502::RTSImplied;
 }
 
 void Cpu6502::initInstructionCycleTable()
@@ -392,6 +395,8 @@ void Cpu6502::initInstructionCycleTable()
 
     // JSR
     cycleTable[static_cast<uint8_t>(Opcode::JSR_ABSOLUTE)]      = 6;
+
+    cycleTable[static_cast<uint8_t>(Opcode::RTS_IMPLIED)]       = 6;
 }
 
 void Cpu6502::Reset()
@@ -1419,6 +1424,12 @@ void Cpu6502::JSRAbsolute()
     uint16_t returnAddress = PC + 1;
     memory.PushWord(returnAddress);
     PC = memory.ReadWord(PC);
+}
+
+void Cpu6502::RTSImplied()
+{
+    PC = memory.PopWord();
+    PC += 1;
 }
 
 void Cpu6502::HandlePageCross(uint16_t baseAddress, uint16_t effectiveAddress)

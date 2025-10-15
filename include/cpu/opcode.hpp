@@ -633,4 +633,7 @@ enum class Opcode: uint8_t
 
     /// @brief Opcode for JSR Absolute instruction.
     JSR_ABSOLUTE = 0x20,
+
+    /// @brief Opcode for RTS Implied instruction.
+    RTS_IMPLIED = 0x60,
 };
