@@ -1101,6 +1101,36 @@ void Cpu6502::RTIImplied()
     PC = memory.PopWord();
 }
 
+void Cpu6502::PHAImplied()
+{
+
+}
+
+void Cpu6502::PLAImplied()
+{
+
+}
+
+void Cpu6502::PHPImplied()
+{
+
+}
+
+void Cpu6502::PLPImplied()
+{
+
+}
+
+void Cpu6502::TXSImplied()
+{
+
+}
+
+void Cpu6502::TSXImplied()
+{
+
+}
+
 void Cpu6502::HandlePageCross(uint16_t baseAddress, uint16_t effectiveAddress)
 {
     if ((baseAddress & 0xFF00) != (effectiveAddress & 0xFF00))
@@ -1353,6 +1383,14 @@ void Cpu6502::initOpcodeTable()
 
     // RTI
     opcodeTable[static_cast<uint8_t>(Opcode::RTI_IMPLIED)]      = &Cpu6502::RTIImplied;
+
+    // Stack opcodes
+    opcodeTable[static_cast<uint8_t>(Opcode::PHA_IMPLIED)]      = &Cpu6502::PHAImplied;
+    opcodeTable[static_cast<uint8_t>(Opcode::PLA_IMPLIED)]      = &Cpu6502::PLAImplied;
+    opcodeTable[static_cast<uint8_t>(Opcode::PHP_IMPLIED)]      = &Cpu6502::PHPImplied;
+    opcodeTable[static_cast<uint8_t>(Opcode::PLP_IMPLIED)]      = &Cpu6502::PLPImplied;
+    opcodeTable[static_cast<uint8_t>(Opcode::TXS_IMPLIED)]      = &Cpu6502::TXSImplied;
+    opcodeTable[static_cast<uint8_t>(Opcode::TSX_IMPLIED)]      = &Cpu6502::TSXImplied;
 }
 
 void Cpu6502::initInstructionCycleTable()
@@ -1553,4 +1591,12 @@ void Cpu6502::initInstructionCycleTable()
 
     // RTI
     cycleTable[static_cast<uint8_t>(Opcode::RTI_IMPLIED)]       = 6;
+
+    // STACK
+    cycleTable[static_cast<uint8_t>(Opcode::PHA_IMPLIED)]         = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::PLA_IMPLIED)]         = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::PHP_IMPLIED)]         = 3;
+    cycleTable[static_cast<uint8_t>(Opcode::PLP_IMPLIED)]         = 4;
+    cycleTable[static_cast<uint8_t>(Opcode::TXS_IMPLIED)]         = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::TSX_IMPLIED)]         = 2;
 }

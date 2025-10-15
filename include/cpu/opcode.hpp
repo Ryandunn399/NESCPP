@@ -642,4 +642,22 @@ enum class Opcode: uint8_t
 
     /// @brief Opcode for RTI Implied instruction.
     RTI_IMPLIED = 0x40,
+
+    /// @brief Opcode for PHA Implied instruction.
+    PHA_IMPLIED = 0X48,
+
+    /// @brief Opcode for PLA Implied instruction.
+    PLA_IMPLIED = 0X68,
+
+    /// @brief Opcode for PHP Implied instruction.
+    PHP_IMPLIED = 0X08,
+
+    /// @brief Opcode for PLP Implied instruction.
+    PLP_IMPLIED = 0X28,
+
+    /// @brief Opcode for TXS Implied instruction.
+    TXS_IMPLIED = 0X9A,
+
+    /// @brief Opcode for TSX Implied instruction.
+    TSX_IMPLIED = 0XBA,
 };

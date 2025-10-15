@@ -913,6 +913,24 @@ private:
     /// @brief Performs RTI using implied addressing mode.
     void RTIImplied();
 
+    /// @brief Performs PHA using implied addressing mode.
+    void PHAImplied();
+
+    /// @brief Performs PLA using implied addressing mode.
+    void PLAImplied();
+
+    /// @brief Performs PHP using implied addressing mode.
+    void PHPImplied();
+
+    /// @brief Performs PLP using implied addressing mode.
+    void PLPImplied();
+
+    /// @brief Performs TXS using implied addressing mode.
+    void TXSImplied();
+
+    /// @brief Performs TSX using implied addressing mode.
+    void TSXImplied();
+
     /// @brief Method for handling an NMI at the beginning of the CPU fetch execute.
     void HandleNMI();
     
