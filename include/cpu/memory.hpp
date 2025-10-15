@@ -25,8 +25,9 @@ public:
     static constexpr uint16_t kRamEnd = 0x7FFF;
     static constexpr uint16_t kRomStart = 0x8000;
     static constexpr uint16_t kRomEnd = 0xFFFF;
-    static constexpr uint16_t kInterruptVector = 0xFFFE;
-
+    static constexpr uint16_t kNMIVector = 0xFFFA;
+    static constexpr uint16_t kResetVector = 0xFFFC;
+    static constexpr uint16_t kIRQVector = 0xFFFE;  // Also BRK
 
     /**
      * @brief Keeps track of the stack pointer.

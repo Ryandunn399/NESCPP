@@ -15,6 +15,8 @@ TEST_F(Cpu6502Test, InitialState)
 
 TEST_F(Cpu6502Test, Reset)
 {
+    SetupMemory(Memory6502::kResetVector, { 0x00, 0x80 });
+
     // Modify some state
     cpu.A = 0x42;
     cpu.X = 0x33;
@@ -29,7 +31,7 @@ TEST_F(Cpu6502Test, Reset)
     EXPECT_EQ(0, cpu.A);
     EXPECT_EQ(0, cpu.X);
     EXPECT_EQ(0, cpu.Y);
-    EXPECT_EQ(Memory6502::kRomStart, cpu.PC);
+    EXPECT_EQ(0x8000, cpu.PC);
     EXPECT_EQ(0xFF, cpu.GetStackPointer());
 }
 

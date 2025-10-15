@@ -11,11 +11,16 @@ Cpu6502::Cpu6502(Memory6502& mem) : memory(mem)
 void Cpu6502::Reset()
 {
     StatusReg.SetRegister(0x00);
-    PC = Memory6502::kRomStart;
+    StatusReg.SetInterruptDisable(1);
+    
     A = 0;
     X = 0;
     Y = 0;
+    
     memory.ResetStackPointer();
+    
+    PC = memory.ReadWord(Memory6502::kResetVector);
+    
     totalCycles = 0;
     currentInstructionCycles = 0;
 }
@@ -24,6 +29,25 @@ uint8_t Cpu6502::ExecuteInstruction()
 {
     uint8_t opcode = memory.ReadByte(PC);
     PC++;
+
+    // Check for interrupts before executing next instruction.
+    // For BRK (0x00), don't handle NMI here - let BRK handle it
+    if (opcode != 0x00)  // Not BRK
+    {
+        if (nmiPending)
+        {
+            HandleNMI();
+            nmiPending = false;
+            return 7;
+        }
+        
+        if (irqPending && !StatusReg.GetInterruptDisable())
+        {
+            HandleIRQ();
+            irqPending = false;
+            return 7;
+        }
+    }
 
     OpcodeHandler handler = opcodeTable[opcode];
     if (handler == nullptr)
@@ -1044,8 +1068,8 @@ void Cpu6502::RTSImplied()
 void Cpu6502::BRK()
 {
     // Increment by one since the program counter has already been implemented
-    uint16_t currentPc = PC + 1;
-    memory.PushWord(currentPc);
+    uint16_t returnAddress = PC + 1;
+    memory.PushWord(returnAddress);
 
     // / Push status register with B flag (bit 4) set and unused bit (bit 5) always set
     uint8_t statusWithBFlag = StatusReg.GetRegister() | 0b00110000;
@@ -1053,13 +1077,54 @@ void Cpu6502::BRK()
 
     StatusReg.SetInterruptDisable(1);
 
-    PC = memory.ReadWord(Memory6502::kInterruptVector);
+    // Check if NMI occured during BRK to invoke NMI hijacking vector read
+    if (nmiPending)
+    {
+        PC = memory.ReadWord(Memory6502::kNMIVector);
+        nmiPending = false;
+        return;
+    }
+
+    PC = memory.ReadWord(Memory6502::kIRQVector);
 }
 
 void Cpu6502::HandlePageCross(uint16_t baseAddress, uint16_t effectiveAddress)
 {
     if ((baseAddress & 0xFF00) != (effectiveAddress & 0xFF00))
         currentInstructionCycles++;
+}
+
+void Cpu6502::TriggerNMI()
+{
+    nmiPending = true;
+}
+
+void Cpu6502::TriggerIRQ()
+{
+    irqPending = true;
+}
+
+void Cpu6502::HandleNMI()
+{
+    memory.PushWord(PC);
+
+    uint8_t statusWithoutBFlag = StatusReg.GetRegister() | 0b00100000;
+    memory.PushByte(statusWithoutBFlag);
+
+    PC = memory.ReadWord(Memory6502::kNMIVector);
+}
+
+void Cpu6502::HandleIRQ()
+{
+    memory.PushWord(PC);
+    
+    // Push status with B=0, unused bit=1
+    uint8_t statusWithoutBFlag = StatusReg.GetRegister() | 0b00100000;
+    memory.PushByte(statusWithoutBFlag);
+    
+    StatusReg.SetInterruptDisable(1);
+    
+    PC = memory.ReadWord(Memory6502::kIRQVector);
 }
 
 void Cpu6502::SetNZFlags(uint8_t value)

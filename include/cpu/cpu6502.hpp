@@ -94,6 +94,13 @@ public:
     /// @brief Pushes a byte onto memory
     /// @remarks Should only be used for testing, since we want to make sure reset works properly.
     void PushArbitraryByte();
+
+    /// @brief NMI trigger invoked by external hardware (PPU)
+    void TriggerNMI();
+
+    /// @brief IRQ invoked by external hardware
+    void TriggerIRQ();
+
 private:
 
     /**
@@ -122,6 +129,12 @@ private:
 
     /// @brief Cycle lookup table for base instruction timing.
     uint8_t cycleTable[256];
+
+    /// @brief Flag if we have a Non-Maskable Interrupt pending.
+    bool nmiPending = false;
+
+    /// @brief Flag if we have an Interrupt Request pending.
+    bool irqPending = false;
 
     /**
      * @brief Will initialize the opcode table by pointing to the 
@@ -894,8 +907,15 @@ private:
     /// @brief Performs RTS instruction using implied addressing mode.
     void RTSImplied();
 
+    /// @brief Performs BRK instruction.
     void BRK();
+
+    /// @brief Method for handling an NMI at the beginning of the CPU fetch execute.
+    void HandleNMI();
     
+    /// @brief Method for handling an IRQ at the beginning of the CPU fetch execute.
+    void HandleIRQ();
+
     /**
      * @brief Helper method that will evaluate a value and set the zero
      * and negative bit flags in our status register.
