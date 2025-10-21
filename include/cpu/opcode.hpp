@@ -654,10 +654,4 @@ enum class Opcode: uint8_t
 
     /// @brief Opcode for PLP Implied instruction.
     PLP_IMPLIED = 0X28,
-
-    /// @brief Opcode for TXS Implied instruction.
-    TXS_IMPLIED = 0X9A,
-
-    /// @brief Opcode for TSX Implied instruction.
-    TSX_IMPLIED = 0XBA,
 };

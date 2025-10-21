@@ -1103,32 +1103,40 @@ void Cpu6502::RTIImplied()
 
 void Cpu6502::PHAImplied()
 {
-
+    memory.PushByte(A);
 }
 
 void Cpu6502::PLAImplied()
 {
-
+    A = memory.PopByte();
+    SetNZFlags(A);
 }
 
 void Cpu6502::PHPImplied()
 {
-
+    uint8_t breakUnusedMask = 0b00110000;
+    memory.PushByte(StatusReg.GetRegister() | breakUnusedMask);
 }
 
 void Cpu6502::PLPImplied()
 {
+    uint8_t value = memory.PopByte();
 
+    // Preserve the current B and Unused flags, take everything else from stack
+    uint8_t currentBandUnused = StatusReg.GetRegister() & 0b00110000;
+    uint8_t newStatus = (value & 0b11001111) | currentBandUnused;
+    StatusReg.SetRegister(newStatus);
 }
 
 void Cpu6502::TXSImplied()
 {
-
+    memory.StackPointer = X;
 }
 
 void Cpu6502::TSXImplied()
 {
-
+    X = memory.StackPointer;
+    SetNZFlags(X);
 }
 
 void Cpu6502::HandlePageCross(uint16_t baseAddress, uint16_t effectiveAddress)
