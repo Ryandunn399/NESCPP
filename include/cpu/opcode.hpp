@@ -654,4 +654,28 @@ enum class Opcode: uint8_t
 
     /// @brief Opcode for PLP Implied instruction.
     PLP_IMPLIED = 0X28,
+
+    /// @brief Opcode for the CLC Implied instruction.
+    CLC_IMPLIED = 0x18,
+
+    /// @brief Opcode for the SEC Implied instruction.
+    SEC_IMPLIED = 0x38,
+
+    /// @brief Opcode for the CLI Implied instruction.
+    CLI_IMPLIED = 0x58,
+
+    /// @brief Opcode for the SEI Implied instruction.
+    SEI_IMPLIED = 0x78,
+
+    /// @brief Opcode for the CLD Implied instruction.
+    CLD_IMPLIED = 0xD8,
+
+    /// @brief Opcode for the SED Implied instruction.
+    SED_IMPLIED = 0xF8,
+
+    /// @brief Opcode for the CLV Implied instruction.
+    CLV_IMPLIED = 0xB8,
+
+    /// @brief Opcode for the NOP Implied instruction.
+    NOP_IMPLIED = 0xEA
 };

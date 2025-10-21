@@ -1139,6 +1139,46 @@ void Cpu6502::TSXImplied()
     SetNZFlags(X);
 }
 
+void Cpu6502::CLCImplied()
+{
+    StatusReg.SetCarry(0);
+}
+
+void Cpu6502::SECImplied()
+{
+    StatusReg.SetCarry(1);
+}
+
+void Cpu6502::CLIImplied()
+{
+    StatusReg.SetInterruptDisable(0);
+}
+
+void Cpu6502::SEIImplied()
+{
+    StatusReg.SetInterruptDisable(1);
+}
+
+void Cpu6502::CLDImplied()
+{
+    StatusReg.SetDecimal(0);
+}
+
+void Cpu6502::SEDImplied()
+{
+    StatusReg.SetDecimal(1);
+}
+
+void Cpu6502::CLVImplied()
+{
+    StatusReg.SetOverflow(0);
+}
+
+void Cpu6502::NOPImplied()
+{
+
+}
+
 void Cpu6502::HandlePageCross(uint16_t baseAddress, uint16_t effectiveAddress)
 {
     if ((baseAddress & 0xFF00) != (effectiveAddress & 0xFF00))
@@ -1399,6 +1439,18 @@ void Cpu6502::initOpcodeTable()
     opcodeTable[static_cast<uint8_t>(Opcode::PLP_IMPLIED)]      = &Cpu6502::PLPImplied;
     opcodeTable[static_cast<uint8_t>(Opcode::TXS_IMPLIED)]      = &Cpu6502::TXSImplied;
     opcodeTable[static_cast<uint8_t>(Opcode::TSX_IMPLIED)]      = &Cpu6502::TSXImplied;
+
+    // Flags opcodes
+    opcodeTable[static_cast<uint8_t>(Opcode::CLC_IMPLIED)]      = &Cpu6502::CLCImplied;
+    opcodeTable[static_cast<uint8_t>(Opcode::SEC_IMPLIED)]      = &Cpu6502::SECImplied;
+    opcodeTable[static_cast<uint8_t>(Opcode::CLI_IMPLIED)]      = &Cpu6502::CLIImplied;
+    opcodeTable[static_cast<uint8_t>(Opcode::SEI_IMPLIED)]      = &Cpu6502::SEIImplied;
+    opcodeTable[static_cast<uint8_t>(Opcode::CLD_IMPLIED)]      = &Cpu6502::CLDImplied;
+    opcodeTable[static_cast<uint8_t>(Opcode::SED_IMPLIED)]      = &Cpu6502::SEDImplied;
+    opcodeTable[static_cast<uint8_t>(Opcode::CLV_IMPLIED)]      = &Cpu6502::CLVImplied;
+
+    // NOP
+    opcodeTable[static_cast<uint8_t>(Opcode::NOP_IMPLIED)]      = &Cpu6502::NOPImplied;
 }
 
 void Cpu6502::initInstructionCycleTable()
@@ -1607,4 +1659,16 @@ void Cpu6502::initInstructionCycleTable()
     cycleTable[static_cast<uint8_t>(Opcode::PLP_IMPLIED)]         = 4;
     cycleTable[static_cast<uint8_t>(Opcode::TXS_IMPLIED)]         = 2;
     cycleTable[static_cast<uint8_t>(Opcode::TSX_IMPLIED)]         = 2;
+
+    // FLAGS
+    cycleTable[static_cast<uint8_t>(Opcode::CLC_IMPLIED)]         = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::SEC_IMPLIED)]         = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::CLI_IMPLIED)]         = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::SEI_IMPLIED)]         = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::CLD_IMPLIED)]         = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::SED_IMPLIED)]         = 2;
+    cycleTable[static_cast<uint8_t>(Opcode::CLV_IMPLIED)]         = 2;
+
+    // NOP
+    cycleTable[static_cast<uint8_t>(Opcode::NOP_IMPLIED)]         = 2;
 }

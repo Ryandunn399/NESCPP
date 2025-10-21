@@ -931,6 +931,30 @@ private:
     /// @brief Performs TSX using implied addressing mode.
     void TSXImplied();
 
+    /// @brief Performs CLC using implied addressing mode.
+    void CLCImplied();
+
+    /// @brief Performs SEC using implied addressing mode.
+    void SECImplied();
+
+    /// @brief Performs CLI using implied addressing mode.
+    void CLIImplied();
+
+    /// @brief Performs SEI using implied addressing mode.
+    void SEIImplied();
+
+    /// @brief Performs CLD using implied addressing mode.
+    void CLDImplied();
+
+    /// @brief Performs SED using implied addressing mode.
+    void SEDImplied();
+
+    /// @brief Performs CLV using implied addressing mode.
+    void CLVImplied();
+
+    /// @brief Performs NOP using implied addressing mode.
+    void NOPImplied();
+
     /// @brief Method for handling an NMI at the beginning of the CPU fetch execute.
     void HandleNMI();
     
